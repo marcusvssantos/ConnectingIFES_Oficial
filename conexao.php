@@ -2,6 +2,12 @@
 
 $conn = mysqli_connect("localhost", "root", "", "connecting_ifes"); //Conexão Sem PDO
 
+$login_cookie = $_COOKIE['login'];
+if (!isset($login_cookie)) { //Verificação de Login do Usuário
+    header("Location: login.php");
+}
+
+
 $pdo = new PDO('mysql:host=localhost;port=3306;dbname=connecting_ifes', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Conexãoo Com PDO
 
