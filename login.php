@@ -1,50 +1,54 @@
 <?php
 include("conexao.php");
-
-
-
-
-if (isset($_POST['entrar'])) {
-    $email = $_POST['email'];
+session_start();
+/*if (isset($_POST['entrar'])) {
+    $login = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $login =  mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'");
+    $login =  mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$login' AND senha = '$senha'");
     $pegaLogin = mysqli_fetch_assoc($login);
 
 
-    if (mysqli_num_rows($login)<=0) {     
+    if (mysqli_num_rows($login)<=0) {
+        unset ($_SESSION['idUsuario']);
+        unset ($_SESSION['senha']);     
         echo"<script language='javascript' type='text/javascript'>
         alert('Login e/ou senha incorretos');window.location
         .href='login.php';</script>";
     } else {
-        setcookie('login', $pegaLogin['idUsuario']); // Usuário Logado!
+        $_SESSION['email'] = $login;
+        $_SESSION['senha'] = $senha;
         header("location: ./");
     }
+} */
+
+
+$login = $_POST['login'];
+$senha = $_POST['senha'];
+
+
+
+$result =  mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$login' AND senha = '$senha'");
+
+if (mysqli_num_rows($result) > 0) {
+    $_SESSION['login'] = $login;
+    $_SESSION['senha'] = $senha;
+
+    $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$login' AND senha = '$senha'");
+    $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
+
+    if ($f_tipo_de_usuario['tipo'] == "Aluno") {
+        header("Location: usuarios/aluno/aluno.php");
+        exit();
+    } elseif ($f_tipo_de_usuario['tipo'] == "Professor") {
+        header("Location: usuarios/professor/professor.php");
+        exit();
+    } elseif ($f_tipo_de_usuario['tipo'] == "Administrador") {
+        header("Location: usuarios/admin/admin.php");
+        exit();
+    }
+} else {
+    unset($_SESSION['login']);
+    unset($_SESSION['senha']);
+    header('location:index.php');
 }
-?>
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connecting IFES</title>
-    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-</head>
-
-<body>
-    <img src="img/logoIFES.svg">
-    <h2> Login </h2>
-    <form method="POST" action="login.php">
-        <input type="email" placeholder="Email" name="email"><br />
-        <input type="password" placeholder="Senha" name="senha"><br />
-        <input type="submit" value="Entrar" name="entrar">
-    </form>
-    <h3>Ainda não Possui Conta? <a href="registrar.php">Criar Conta</a></h3>
-</body>
-
-</html>

@@ -2,12 +2,8 @@
 include("../../conexao.php");
 include("header.php");
 
-$tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE idUsuario = '$login_cookie'");
-$f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
-if ($f_tipo_de_usuario['tipo'] !== "Administrador") {
-    echo '<script>window.history.back();</script>';
-}
+$logado = $_SESSION['login'];
 
 // Busque os dados da tabela 'usuarios'
 $usuarios_query = mysqli_query($conn, "SELECT * FROM usuarios");
@@ -56,12 +52,12 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
                             <td><?php echo $usuario['tipo']; ?></td>
                             <td>
 
-                                <a href="#" style="text-decoration: none;">
-                                    <img src="../../bootstrap/icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
+                            <a href="editar.php?id=<?php echo $usuario['idUsuario']; ?>" style="text-decoration: none;">
+                                    <img src="../../icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
                                 </a>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                 <a href="#" style="text-decoration: none;">
-                                    <img src="../../bootstrap/icons/trash3-fill.svg" width="16" height="16" alt="Ícone">
+                                    <img src="../../icons/trash3-fill.svg" width="16" height="16" alt="Ícone">
                                 </a>
                             </td>
                         </tr>
@@ -77,6 +73,8 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
             });
         </script>
     </div>
+
+    
 </body>
 
 </html>

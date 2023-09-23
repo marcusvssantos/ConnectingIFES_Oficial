@@ -1,5 +1,21 @@
-<html>
+<?php
+session_start();
 
+if((!isset ($_SESSION['login']) == true) and (!isset ($_SESSION['senha']) == true))
+{
+  header('location: ../../index.php');
+}
+
+
+
+if (isset($_POST['sair'])) {
+    unset($_SESSION['login']);
+    unset($_SESSION['senha']);
+}
+
+?>
+
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -35,6 +51,9 @@
             <li class="nav-item"><a href="#" class="nav-link">FAQs</a></li>
             <li class="nav-item"><a href="#" class="nav-link">About</a></li>
         </ul>
+        <form class="nav navbar-nav navbar-right" method="POST">
+            <button type="submit" class="btn btn-danger" name="sair">Sair</button>
+        </form>
     </header>
 
 

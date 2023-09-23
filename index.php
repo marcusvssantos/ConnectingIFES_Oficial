@@ -1,18 +1,22 @@
-<?php
-include("conexao.php");
+<!DOCTYPE html>
+<html lang="en">
 
-$tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE idUsuario = '$login_cookie'");
-$f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting IFES</title>
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+</head>
 
-if($f_tipo_de_usuario['tipo']=="Aluno"){
-    header("Location: usuarios/aluno/aluno.php");
-    exit(); 
-}elseif($f_tipo_de_usuario['tipo']=="Professor"){
-    header("Location: usuarios/professor/professor.php");
-    exit(); 
-}elseif($f_tipo_de_usuario['tipo']=="Administrador"){
-    header("Location: usuarios/admin/admin.php");
-    exit(); 
-}
-?>
+<body>
+    <img src="img/logoIFES.svg">
+    <h2> Login </h2>
+    <form method="POST" action="login.php" id="formlogin" name="formlogin">
+        <input type="email" placeholder="Login" name="login"><br />
+        <input type="password" placeholder="Senha" name="senha"><br />
+        <input type="submit" value="Entrar" name="entrar">
+    </form>
+</body>
 
+</html>
