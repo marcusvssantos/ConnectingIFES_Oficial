@@ -20,7 +20,7 @@ $logado = $_SESSION['login'];
 $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$logado'");
 $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
-if ($f_tipo_de_usuario['tipo'] !== "admin") {
+if ($f_tipo_de_usuario['tipo'] !== "Administrador") {
     echo '<script>window.history.back();</script>';
 }
 
@@ -54,18 +54,17 @@ if ($f_tipo_de_usuario['tipo'] !== "admin") {
 
 <body>
 
-    <header class="d-flex justify-content-center py-3 bg-success">
+    <header class="d-flex justify-content py-3 bg-success">
         <ul class="nav nav-pills">
-            <li class="nav-item"><a href="admin.php" class="nav-link " aria-current="page">Administradores</a></li>
-            <li class="nav-item"><a href="gerenciar_professor.php" class="nav-link " aria-current="page">Professores</a></li>
-            <li class="nav-item"><a href="gerenciar_estudante.php" class="nav-link " aria-current="page">Estudantes</a></li>
-
-        </ul>
-        <form class="nav navbar-nav navbar-right" method="POST">
+            <li class="nav-item"><a href="admin.php" class="nav-link active" aria-current="page">Painel de Usuários</a></li>
+            <form class="nav navbar-nav navbar-right" method="POST">
             <button type="submit" class="btn btn-danger" name="sair">Sair</button>
         </form>
+        </ul>
+        
+        
     </header>
-
+        
 
 </body>
 

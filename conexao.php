@@ -1,10 +1,10 @@
 <?php
 
-$conn = mysqli_connect("localhost", "root", "", "connecting_ifes"); //Conexão Sem PDO
+$conn = mysqli_connect("localhost", "root", "", "connecting_ifes_oficial"); //Conexão Sem PDO
 
 
 
-$pdo = new PDO('mysql:host=localhost;port=3306;dbname=connecting_ifes', 'root', '');
+$pdo = new PDO('mysql:host=localhost;port=3306;dbname=connecting_ifes_oficial', 'root', '');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Conexãoo Com PDO
 
 ?>

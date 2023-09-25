@@ -37,13 +37,13 @@ if (mysqli_num_rows($result) > 0) {
     $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$login' AND senha = '$senha'");
     $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
-    if ($f_tipo_de_usuario['tipo'] == "Aluno") {
-        header("Location: usuarios/aluno/aluno.php");
+    if ($f_tipo_de_usuario['tipo'] == "estudante") {
+        header("Location: usuarios/estudante/estudante.php");
         exit();
-    } elseif ($f_tipo_de_usuario['tipo'] == "Professor") {
+    } elseif ($f_tipo_de_usuario['tipo'] == "professor") {
         header("Location: usuarios/professor/professor.php");
         exit();
-    } elseif ($f_tipo_de_usuario['tipo'] == "Administrador") {
+    } elseif ($f_tipo_de_usuario['tipo'] == "admin") {
         header("Location: usuarios/admin/admin.php");
         exit();
     }
