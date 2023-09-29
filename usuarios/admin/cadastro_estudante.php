@@ -1,4 +1,5 @@
 <?php
+include("header.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Coleta os dados do formulário
     $nome = $_POST["nome"];
@@ -131,37 +132,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../../bootstrap/js/bootstrap.min.js"></script>
     <title>Cadastro de Estudante</title>
 </head>
+
 <body>
-    <h2>Cadastro de Estudante</h2>
-    <form method="post" action="cadastro_estudante.php" enctype="multipart/form-data">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required><br><br>
+    <div class="container mt-5">
+        <h2 class="mb-4">Cadastro de Estudante</h2>
+        <form method="post" action="cadastro_estudante.php" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="text" id="nome" placeholder="Nome" name="nome" required><br><br>
+            </div>
 
-        <label for "sobrenome">Sobrenome:</label>
-        <input type="text" id="sobrenome" name="sobrenome" required><br><br>
+            <div class="mb-3">
+                <input type="text" id="sobrenome" placeholder="Sobrenome" name="sobrenome" required><br><br>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+            </div>
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required><br><br>
+            <div class="mb-3">
+                <input type="email" id="email" placeholder="Email" name="email" required><br><br>
 
-        <label for="matricula">Matrícula:</label>
-        <input type="text" id="matricula" name="matricula" required><br><br>
+            </div>
 
-        <label for="curso">Curso:</label>
-        <input type="text" id="curso" name="curso" required><br><br>
+            <div class="mb-3">
+                <input type="password" id="senha" placeholder="Senha" name="senha" required><br><br>
 
-        <label for="periodo">Período:</label>
-        <input type="number" id="periodo" name="periodo" required><br><br>
+            </div>
 
-        <label for="fotoPerfil">Foto de Perfil:</label>
-        <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            <div class="mb-3">
+                <input type="text" id="matricula" placeholder="Matricula" name="matricula" required><br><br>
 
-        <input type="submit" value="Cadastrar Estudante">
-    </form>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" id="curso" name="curso" placeholder="Curso" required><br><br>
+
+            </div>
+
+            <div class="mb-3">
+                <input type="number" id="periodo" placeholder="Periodo" name="periodo" required><br><br>
+            </div>
+
+            <div class="mb-3">
+                <label for="fotoPerfil">Foto de Perfil:</label><br>
+                <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            </div>
+
+            <input type="submit" class="btn btn-success" value="Cadastrar Estudante">
+        </form>
+    </div>
 </body>
+
 </html>

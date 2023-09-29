@@ -1,4 +1,5 @@
 <?php
+include("header.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Coleta os dados do formulário
     $nome = $_POST["nome"];
@@ -66,70 +67,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Insere o usuário na tabela "usuarios"
     $sqlUsuario = "INSERT INTO Usuarios (nome, sobrenome, email, senha, fotoPerfil, tipo) VALUES (?, ?, ?, ?, ?, 'admin')";
-$stmtUsuario = $conexao->prepare($sqlUsuario);
+    $stmtUsuario = $conexao->prepare($sqlUsuario);
 
-if ($stmtUsuario === false) {
-    die("Erro na preparação da consulta: " . $conexao->error);
-}
+    if ($stmtUsuario === false) {
+        die("Erro na preparação da consulta: " . $conexao->error);
+    }
 
-$stmtUsuario->bind_param("sssss", $nome, $sobrenome, $email, $senha, $caminhoCompleto);
+    $stmtUsuario->bind_param("sssss", $nome, $sobrenome, $email, $senha, $caminhoCompleto);
 
-if (!$stmtUsuario->execute()) {
-    echo "Erro ao cadastrar o administrador: " . $stmtUsuario->error;
+    if (!$stmtUsuario->execute()) {
+        echo "Erro ao cadastrar o administrador: " . $stmtUsuario->error;
+        $conexao->close();
+        exit;
+    }
+
+    // Obtém o ID do usuário recém-cadastrado
+    $idUsuario = $stmtUsuario->insert_id;
+
+    $stmtUsuario->close();
+
+    // Insere o administrador na tabela "administradores" com base no ID do usuário
+    $sqlAdministrador = "INSERT INTO Administradores (idUsuario) VALUES (?)";
+    $stmtAdministrador = $conexao->prepare($sqlAdministrador);
+
+    if ($stmtAdministrador === false) {
+        die("Erro na preparação da consulta: " . $conexao->error);
+    }
+
+    $stmtAdministrador->bind_param("i", $idUsuario);
+
+    if ($stmtAdministrador->execute()) {
+        echo "Cadastro de administrador realizado com sucesso!";
+    } else {
+        echo "Erro ao cadastrar o administrador: " . $stmtAdministrador->error;
+    }
+
+    $stmtAdministrador->close();
     $conexao->close();
-    exit;
-}
-
-// Obtém o ID do usuário recém-cadastrado
-$idUsuario = $stmtUsuario->insert_id;
-
-$stmtUsuario->close();
-
-// Insere o administrador na tabela "administradores" com base no ID do usuário
-$sqlAdministrador = "INSERT INTO Administradores (idUsuario) VALUES (?)";
-$stmtAdministrador = $conexao->prepare($sqlAdministrador);
-
-if ($stmtAdministrador === false) {
-    die("Erro na preparação da consulta: " . $conexao->error);
-}
-
-$stmtAdministrador->bind_param("i", $idUsuario);
-
-if ($stmtAdministrador->execute()) {
-    echo "Cadastro de administrador realizado com sucesso!";
-} else {
-    echo "Erro ao cadastrar o administrador: " . $stmtAdministrador->error;
-}
-
-$stmtAdministrador->close();
-$conexao->close();
 }
 ?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../../bootstrap/js/bootstrap.min.js"></script>
     <title>Cadastro de Administrador</title>
 </head>
+
 <body>
-    <h2>Cadastro de Administrador</h2>
-    <form method="post" action="cadastro_administrador.php" enctype="multipart/form-data">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required><br><br>
+    <div class="container mt-5">
+        <h2 class="mb-4">Cadastro de Administrador</h2>
+        <form method="post" action="cadastro_administrador.php" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="text" id="nome" placeholder="Nome" name="nome" required><br><br>
+            </div>
 
-        <label for="sobrenome">Sobrenome:</label>
-        <input type="text" id="sobrenome" name="sobrenome" required><br><br>
+            <div class="mb-3">
+                <input type="text" id="sobrenome" placeholder="Sobrenome" name="sobrenome" required><br><br>
+            </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+            <div class="mb-3">
+                <input type="email" id="email" placeholder="Email" name="email" required><br><br>
+            </div>
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required><br><br>
+            <div class="mb-3">
+                <input type="password" id="senha" placeholder="Senha name=" senha" required><br><br>
+            </div>
 
-        <label for="fotoPerfil">Foto de Perfil:</label>
-        <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            <div class="mb-3">
+                <label for="fotoPerfil">Foto de Perfil:</label><br>
 
-        <input type="submit" value="Cadastrar Administrador">
-    </form>
+                <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            </div>
+
+            <input type="submit" class="btn btn-success" value="Cadastrar Administrador">
+        </form>
+    </div>
 </body>
+
 </html>

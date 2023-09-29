@@ -1,4 +1,5 @@
 <?php
+include("header.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Coleta os dados do formulário
     $nome = $_POST["nome"];
@@ -130,34 +131,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../../bootstrap/js/bootstrap.min.js"></script>
     <title>Cadastro de Professor</title>
 </head>
+
 <body>
-    <h2>Cadastro de Professor</h2>
-    <form method="post" action="cadastro_professor.php" enctype="multipart/form-data">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required><br><br>
+    <div class="container mt-5">
+        <h2 class="mb-4">Cadastro de Professores</h2>
+        <form method="post" action="cadastro_professor.php" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="text" id="nome" placeholder="Nome" name="nome" required><br><br>
 
-        <label for="sobrenome">Sobrenome:</label>
-        <input type="text" id="sobrenome" name="sobrenome" required><br><br>
+            </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+            <div class="mb-3">
+                <input type="text" id="sobrenome" placeholder="Sobrenome" name="sobrenome" required><br><br>
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required><br><br>
+            </div>
 
-        <label for="departamento">Departamento:</label>
-        <input type="text" id="departamento" name="departamento" required><br><br>
+            <div class="mb-3">
+                <input type="email" id="email" placeholder="Email" name="email" required><br><br>
 
-        <label for="siape">SIAPE:</label>
-        <input type="text" id="siape" name="siape" required><br><br>
+            </div>
 
-        <label for="fotoPerfil">Foto de Perfil:</label>
-        <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            <div class="mb-3">
+                <input type="password" id="senha" placeholder="Senha" name="senha" required><br><br>
 
-        <input type="submit" value="Cadastrar Professor">
-    </form>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" id="departamento" placeholder="Departamento"  name="departamento" required><br><br>
+
+            </div>
+
+            <div class="mb-3">
+                <input type="text" id="siape" placeholder="SIAPE" name="siape" required><br><br>
+            </div>
+
+            <div class="mb-3">
+                <label for="fotoPerfil">Foto de Perfil:</label><br>
+                <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+            </div>
+
+
+            <input type="submit" class="btn btn-success" value="Cadastrar Professor">
+        </form>
+    </div>
 </body>
+
 </html>
