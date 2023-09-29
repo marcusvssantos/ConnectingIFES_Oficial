@@ -33,7 +33,6 @@ if (!$resultado) {
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>Sobrenome</th>
                         <th>Email</th>
@@ -47,7 +46,6 @@ if (!$resultado) {
                     <?php
                     while ($linha = $resultado->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $linha["idUsuario"] . "</td>";
                         echo "<td>" . $linha["nome"] . "</td>";
                         echo "<td>" . $linha["sobrenome"] . "</td>";
                         echo "<td>" . $linha["email"] . "</td>";
@@ -75,7 +73,7 @@ if (!$resultado) {
         <script>
             document.getElementById("cadastrarProfessor").addEventListener("click", function() {
                 // Redirecionar para a página de cadastro de professores
-                window.location.href = "cadastro_professor.php";
+                window.location.href = "cadastrar_professor.php";
             });
         </script>
     </div>

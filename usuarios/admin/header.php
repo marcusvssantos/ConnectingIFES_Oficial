@@ -56,7 +56,9 @@ if ($f_tipo_de_usuario['tipo'] !== "admin") {
 
     <header class="d-flex justify-content-center py-3 bg-success">
         <ul class="nav nav-pills">
-            <li class="nav-item"><a href="admin.php" class="nav-link " aria-current="page">Administradores</a></li>
+
+            <li class="nav-item"><a href="index_administrador.php" class="nav-link " aria-current="page">Página Inicial</a></li>
+            <li class="nav-item"><a href="gerenciar_administrador.php" class="nav-link " aria-current="page">Administradores</a></li>
             <li class="nav-item"><a href="gerenciar_professor.php" class="nav-link " aria-current="page">Professores</a></li>
             <li class="nav-item"><a href="gerenciar_estudante.php" class="nav-link " aria-current="page">Estudantes</a></li>
 

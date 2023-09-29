@@ -44,7 +44,6 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>Sobrenome</th>
                         <th>Email</th>
@@ -56,14 +55,13 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
                     <?php
                     while ($linha = $resultado->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $linha["idUsuario"] . "</td>";
                         echo "<td>" . $linha["nome"] . "</td>";
                         echo "<td>" . $linha["sobrenome"] . "</td>";
                         echo "<td>" . $linha["email"] . "</td>";
                         echo '<td><img src="' . $linha["fotoPerfil"] . '" style="border-radius: 50%; width: 50px; height: 50px;" alt="Foto de Perfil"></td>'; ?>
                         <td>
 
-                            <a href="editar_usuario.php?id=<?php echo $linha['idUsuario']; ?>" style="text-decoration: none;">
+                            <a href="editar_administrador.php?id=<?php echo $linha['idUsuario']; ?>" style="text-decoration: none;">
                                 <img src="../../icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
                             </a>
                             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -82,7 +80,7 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
         <script>
             document.getElementById("cadastrarAdministrador").addEventListener("click", function() {
                 // Redirecionar para a página de cadastro
-                window.location.href = "cadastro_administrador.php";
+                window.location.href = "cadastrar_administrador.php";
             });
         </script>
     </div>

@@ -44,7 +44,7 @@ if (mysqli_num_rows($result) > 0) {
         header("Location: usuarios/professor/professor.php");
         exit();
     } elseif ($f_tipo_de_usuario['tipo'] == "admin") {
-        header("Location: usuarios/admin/admin.php");
+        header("Location: usuarios/admin/index_administrador.php");
         exit();
     }
 } else {
