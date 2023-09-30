@@ -1,57 +1,51 @@
 <?php
 include("header.php");
 
-// Verifique se o ID do estudante foi passado via parâmetro na URL
+// Verifique se o ID do administrador foi passado via parâmetro na URL
 if (isset($_GET["id"])) {
-    $idEstudante = $_GET["id"];
+    $idAdministrador = $_GET["id"];
 
-    // Consulta SQL para obter os detalhes do estudante com base no ID
-    $sql = "SELECT Usuarios.idUsuario, Usuarios.nome, Usuarios.sobrenome, Usuarios.email, Usuarios.fotoPerfil, Estudantes.matricula, Estudantes.curso, Estudantes.periodo FROM Usuarios INNER JOIN Estudantes ON Usuarios.idUsuario = Estudantes.idUsuario WHERE Usuarios.idUsuario = ?";
+    // Consulta SQL para obter os detalhes do administrador com base no ID
+    $sql = "SELECT Usuarios.idUsuario, Usuarios.nome, Usuarios.sobrenome, Usuarios.email, Usuarios.fotoPerfil FROM Usuarios INNER JOIN Administradores ON Usuarios.idUsuario = Administradores.idUsuario WHERE Usuarios.idUsuario = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
         die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("i", $idEstudante);
+    $stmt->bind_param("i", $idAdministrador);
     $stmt->execute();
     $resultado = $stmt->get_result();
 
     if ($resultado->num_rows > 0) {
         $linha = $resultado->fetch_assoc();
-        // Dados do estudante
+        // Dados do administrador
         $nome = $linha["nome"];
         $sobrenome = $linha["sobrenome"];
         $email = $linha["email"];
-        $matricula = $linha["matricula"];
-        $curso = $linha["curso"];
-        $periodo = $linha["periodo"];
         $fotoPerfil = $linha["fotoPerfil"];
     } else {
-        echo "Estudante não encontrado.";
+        echo "Administrador não encontrado.";
         exit;
     }
 
     $stmt->close();
 } else {
-    echo "ID do estudante não especificado na URL.";
+    echo "ID do administrador não especificado na URL.";
     exit;
 }
 
-// Verifique se o formulário foi enviado para atualizar os detalhes do estudante
+// Verifique se o formulário foi enviado para atualizar os detalhes do administrador
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Coleta os dados do formulário
     $nome = $_POST["nome"];
     $sobrenome = $_POST["sobrenome"];
     $email = $_POST["email"];
-    $matricula = $_POST["matricula"];
-    $curso = $_POST["curso"];
-    $periodo = $_POST["periodo"];
 
     // Verifica se uma nova foto de perfil foi enviada
     if (isset($_FILES["novaFotoPerfil"]) && $_FILES["novaFotoPerfil"]["error"] === 0) {
         // Diretório onde a nova foto de perfil será armazenada (altere para o seu diretório)
-        $diretorioDestino = "../estudante/uploads/foto/";
+        $diretorioDestino = "../admin/uploads/foto/";
 
         // Gere um nome único para a nova foto de perfil com base no timestamp atual
         $nomeUnico = time() . '_' . $_FILES["novaFotoPerfil"]["name"];
@@ -70,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Erro na preparação da consulta: " . $conn->error);
         }
 
-        $stmtAtualizaFotoPerfil->bind_param("si", $caminhoCompleto, $idEstudante);
+        $stmtAtualizaFotoPerfil->bind_param("si", $caminhoCompleto, $idAdministrador);
 
         if (!$stmtAtualizaFotoPerfil->execute()) {
             echo "Erro ao atualizar a foto de perfil: " . $stmtAtualizaFotoPerfil->error;
@@ -80,41 +74,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmtAtualizaFotoPerfil->close();
     }
 
-    // Atualiza os dados do estudante no banco de dados
-    $sqlAtualizaEstudante = "UPDATE Usuarios SET nome = ?, sobrenome = ?, email = ? WHERE idUsuario = ?";
-    $stmtAtualizaEstudante = $conn->prepare($sqlAtualizaEstudante);
+    // Atualiza os dados do administrador no banco de dados
+    $sqlAtualizaAdministrador = "UPDATE Usuarios SET nome = ?, sobrenome = ?, email = ? WHERE idUsuario = ?";
+    $stmtAtualizaAdministrador = $conn->prepare($sqlAtualizaAdministrador);
 
-    if ($stmtAtualizaEstudante === false) {
+    if ($stmtAtualizaAdministrador === false) {
         die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmtAtualizaEstudante->bind_param("sssi", $nome, $sobrenome, $email, $idEstudante);
+    $stmtAtualizaAdministrador->bind_param("sssi", $nome, $sobrenome, $email, $idAdministrador);
 
-    if (!$stmtAtualizaEstudante->execute()) {
-        echo "Erro ao atualizar os dados do estudante: " . $stmtAtualizaEstudante->error;
-        $stmtAtualizaEstudante->close();
+    if (!$stmtAtualizaAdministrador->execute()) {
+        echo "Erro ao atualizar os dados do administrador: " . $stmtAtualizaAdministrador->error;
+        $stmtAtualizaAdministrador->close();
         exit;
     }
 
-    // Atualiza os dados específicos do estudante na tabela "estudantes"
-    $sqlAtualizaDadosEstudante = "UPDATE Estudantes SET matricula = ?, curso = ?, periodo = ? WHERE idUsuario = ?";
-    $stmtAtualizaDadosEstudante = $conn->prepare($sqlAtualizaDadosEstudante);
-
-    if ($stmtAtualizaDadosEstudante === false) {
-        die("Erro na preparação da consulta: " . $conn->error);
-    }
-
-    $stmtAtualizaDadosEstudante->bind_param("ssii", $matricula, $curso, $periodo, $idEstudante);
-
-    if (!$stmtAtualizaDadosEstudante->execute()) {
-        echo "Erro ao atualizar os dados do estudante: " . $stmtAtualizaDadosEstudante->error;
-        $stmtAtualizaDadosEstudante->close();
-        exit;
-    }
-
-    echo "Dados do estudante atualizados com sucesso!";
-    $stmtAtualizaDadosEstudante->close();
-    header('location: gerenciar_estudante.php');
+    echo "Dados do administrador atualizados com sucesso!";
+    $stmtAtualizaAdministrador->close();
+    header('location: gerenciar_administrador.php');
 }
 ?>
 
@@ -127,13 +105,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-    <title>Editar Estudante</title>
+    <title>Editar Administrador</title>
 </head>
 
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">Editar Estudante</h2>
-        <form method="post" action="editar_estudante.php?id=<?php echo $idEstudante; ?>" enctype="multipart/form-data">
+        <h2 class="mb-4">Editar Administrador</h2>
+        <form method="post" action="editar_administrador.php?id=<?php echo $idAdministrador; ?>" enctype="multipart/form-data">
             <div class="mb-3">
                 <input type="text" id="nome" placeholder="Nome" name="nome" value="<?php echo $nome; ?>" required><br><br>
             </div>
@@ -144,18 +122,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="mb-3">
                 <input type="email" id="email" placeholder="Email" name="email" value="<?php echo $email; ?>" required><br><br>
-            </div>
-
-            <div class="mb-3">
-                <input type="text" id="matricula" placeholder="Matricula" name="matricula" value="<?php echo $matricula; ?>" required><br><br>
-            </div>
-
-            <div class="mb-3">
-                <input type="text" id="curso" name="curso" placeholder="Curso" value="<?php echo $curso; ?>" required><br><br>
-            </div>
-
-            <div class="mb-3">
-                <input type="number" id="periodo" placeholder="Periodo" name="periodo" value="<?php echo $periodo; ?>" required><br><br>
             </div>
 
             <div class="mb-3">

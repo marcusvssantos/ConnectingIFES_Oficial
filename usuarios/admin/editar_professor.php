@@ -1,66 +1,67 @@
 <?php
 include("header.php");
 
-// Verifique se o ID do estudante foi passado via parâmetro na URL
+// Verifique se o ID do professor foi passado via parâmetro na URL
 if (isset($_GET["id"])) {
-    $idEstudante = $_GET["id"];
+    $idProfessor = $_GET["id"];
 
-    // Consulta SQL para obter os detalhes do estudante com base no ID
-    $sql = "SELECT Usuarios.idUsuario, Usuarios.nome, Usuarios.sobrenome, Usuarios.email, Usuarios.fotoPerfil, Estudantes.matricula, Estudantes.curso, Estudantes.periodo FROM Usuarios INNER JOIN Estudantes ON Usuarios.idUsuario = Estudantes.idUsuario WHERE Usuarios.idUsuario = ?";
+    // Consulta SQL para obter os detalhes do professor com base no ID
+    $sql = "SELECT Usuarios.idUsuario, Usuarios.nome, Usuarios.sobrenome, Usuarios.email, Usuarios.fotoPerfil, Professores.departamento, Professores.siape FROM Usuarios INNER JOIN Professores ON Usuarios.idUsuario = Professores.idUsuario WHERE Usuarios.idUsuario = ?";
     $stmt = $conn->prepare($sql);
 
     if ($stmt === false) {
         die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("i", $idEstudante);
+    $stmt->bind_param("i", $idProfessor);
     $stmt->execute();
     $resultado = $stmt->get_result();
 
     if ($resultado->num_rows > 0) {
         $linha = $resultado->fetch_assoc();
-        // Dados do estudante
+        // Dados do professor
         $nome = $linha["nome"];
         $sobrenome = $linha["sobrenome"];
         $email = $linha["email"];
-        $matricula = $linha["matricula"];
-        $curso = $linha["curso"];
-        $periodo = $linha["periodo"];
+        $departamento = $linha["departamento"];
+        $siape = $linha["siape"];
         $fotoPerfil = $linha["fotoPerfil"];
     } else {
-        echo "Estudante não encontrado.";
+        echo "Professor não encontrado.";
         exit;
     }
 
     $stmt->close();
 } else {
-    echo "ID do estudante não especificado na URL.";
+    echo "ID do professor não especificado na URL.";
     exit;
 }
 
-// Verifique se o formulário foi enviado para atualizar os detalhes do estudante
+// Verifique se o formulário foi enviado para atualizar os detalhes do professor
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Coleta os dados do formulário
     $nome = $_POST["nome"];
     $sobrenome = $_POST["sobrenome"];
     $email = $_POST["email"];
-    $matricula = $_POST["matricula"];
-    $curso = $_POST["curso"];
-    $periodo = $_POST["periodo"];
+    $departamento = $_POST["departamento"];
+    $siape = $_POST["siape"];
 
     // Verifica se uma nova foto de perfil foi enviada
     if (isset($_FILES["novaFotoPerfil"]) && $_FILES["novaFotoPerfil"]["error"] === 0) {
+        $fotoPerfilNome = $_FILES["novaFotoPerfil"]["name"];
+        $fotoPerfilTempName = $_FILES["novaFotoPerfil"]["tmp_name"];
+
         // Diretório onde a nova foto de perfil será armazenada (altere para o seu diretório)
-        $diretorioDestino = "../estudante/uploads/foto/";
+        $diretorioDestino = "../professor/uploads/foto/";
 
         // Gere um nome único para a nova foto de perfil com base no timestamp atual
-        $nomeUnico = time() . '_' . $_FILES["novaFotoPerfil"]["name"];
+        $nomeUnico = time() . '_' . $fotoPerfilNome;
 
         // Monta o caminho completo para salvar a nova foto
         $caminhoCompleto = $diretorioDestino . $nomeUnico;
 
         // Move a nova foto de perfil para o diretório de destino
-        move_uploaded_file($_FILES["novaFotoPerfil"]["tmp_name"], $caminhoCompleto);
+        move_uploaded_file($fotoPerfilTempName, $caminhoCompleto);
 
         // Atualiza o caminho da foto de perfil no banco de dados
         $sqlAtualizaFotoPerfil = "UPDATE Usuarios SET fotoPerfil = ? WHERE idUsuario = ?";
@@ -70,51 +71,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Erro na preparação da consulta: " . $conn->error);
         }
 
-        $stmtAtualizaFotoPerfil->bind_param("si", $caminhoCompleto, $idEstudante);
+        $stmtAtualizaFotoPerfil->bind_param("si", $caminhoCompleto, $idProfessor);
 
         if (!$stmtAtualizaFotoPerfil->execute()) {
             echo "Erro ao atualizar a foto de perfil: " . $stmtAtualizaFotoPerfil->error;
             $stmtAtualizaFotoPerfil->close();
+            exit;
         }
 
         $stmtAtualizaFotoPerfil->close();
     }
 
-    // Atualiza os dados do estudante no banco de dados
-    $sqlAtualizaEstudante = "UPDATE Usuarios SET nome = ?, sobrenome = ?, email = ? WHERE idUsuario = ?";
-    $stmtAtualizaEstudante = $conn->prepare($sqlAtualizaEstudante);
+    // Atualiza os dados do professor no banco de dados
+    $sqlAtualizaProfessor = "UPDATE Usuarios SET nome = ?, sobrenome = ?, email = ? WHERE idUsuario = ?";
+    $stmtAtualizaProfessor = $conn->prepare($sqlAtualizaProfessor);
 
-    if ($stmtAtualizaEstudante === false) {
+    if ($stmtAtualizaProfessor === false) {
         die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmtAtualizaEstudante->bind_param("sssi", $nome, $sobrenome, $email, $idEstudante);
+    $stmtAtualizaProfessor->bind_param("sssi", $nome, $sobrenome, $email, $idProfessor);
 
-    if (!$stmtAtualizaEstudante->execute()) {
-        echo "Erro ao atualizar os dados do estudante: " . $stmtAtualizaEstudante->error;
-        $stmtAtualizaEstudante->close();
+    if (!$stmtAtualizaProfessor->execute()) {
+        echo "Erro ao atualizar os dados do professor: " . $stmtAtualizaProfessor->error;
+        $stmtAtualizaProfessor->close();
         exit;
     }
 
-    // Atualiza os dados específicos do estudante na tabela "estudantes"
-    $sqlAtualizaDadosEstudante = "UPDATE Estudantes SET matricula = ?, curso = ?, periodo = ? WHERE idUsuario = ?";
-    $stmtAtualizaDadosEstudante = $conn->prepare($sqlAtualizaDadosEstudante);
+    // Atualiza os dados específicos do professor na tabela "professores"
+    $sqlAtualizaDadosProfessor = "UPDATE Professores SET departamento = ?, siape = ? WHERE idUsuario = ?";
+    $stmtAtualizaDadosProfessor = $conn->prepare($sqlAtualizaDadosProfessor);
 
-    if ($stmtAtualizaDadosEstudante === false) {
+    if ($stmtAtualizaDadosProfessor === false) {
         die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmtAtualizaDadosEstudante->bind_param("ssii", $matricula, $curso, $periodo, $idEstudante);
+    $stmtAtualizaDadosProfessor->bind_param("ssi", $departamento, $siape, $idProfessor);
 
-    if (!$stmtAtualizaDadosEstudante->execute()) {
-        echo "Erro ao atualizar os dados do estudante: " . $stmtAtualizaDadosEstudante->error;
-        $stmtAtualizaDadosEstudante->close();
+    if (!$stmtAtualizaDadosProfessor->execute()) {
+        echo "Erro ao atualizar os dados do professor: " . $stmtAtualizaDadosProfessor->error;
+        $stmtAtualizaDadosProfessor->close();
         exit;
     }
 
-    echo "Dados do estudante atualizados com sucesso!";
-    $stmtAtualizaDadosEstudante->close();
-    header('location: gerenciar_estudante.php');
+    echo "Dados do professor atualizados com sucesso!";
+    $stmtAtualizaDadosProfessor->close();
+    header('location: gerenciar_professor.php');
 }
 ?>
 
@@ -127,13 +129,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-    <title>Editar Estudante</title>
+    <title>Editar Professor</title>
 </head>
 
 <body>
     <div class="container mt-5">
-        <h2 class="mb-4">Editar Estudante</h2>
-        <form method="post" action="editar_estudante.php?id=<?php echo $idEstudante; ?>" enctype="multipart/form-data">
+        <h2 class="mb-4">Editar Professor</h2>
+        <form method="post" action="editar_professor.php?id=<?php echo $idProfessor; ?>" enctype="multipart/form-data">
             <div class="mb-3">
                 <input type="text" id="nome" placeholder="Nome" name="nome" value="<?php echo $nome; ?>" required><br><br>
             </div>
@@ -147,15 +149,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="mb-3">
-                <input type="text" id="matricula" placeholder="Matricula" name="matricula" value="<?php echo $matricula; ?>" required><br><br>
+                <input type="text" id="departamento" placeholder="Departamento" name="departamento" value="<?php echo $departamento; ?>" required><br><br>
             </div>
 
             <div class="mb-3">
-                <input type="text" id="curso" name="curso" placeholder="Curso" value="<?php echo $curso; ?>" required><br><br>
-            </div>
-
-            <div class="mb-3">
-                <input type="number" id="periodo" placeholder="Periodo" name="periodo" value="<?php echo $periodo; ?>" required><br><br>
+                <input type="text" id="siape" placeholder="SIAPE" name="siape" value="<?php echo $siape; ?>" required><br><br>
             </div>
 
             <div class="mb-3">
