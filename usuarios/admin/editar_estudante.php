@@ -168,7 +168,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="<?php echo $fotoPerfil; ?>" style="border-radius: 50%; width: 50px; height: 50px;" alt="Foto de Perfil Atual"><br><br>
             </div>
 
-            <input type="submit" class="btn btn-primary" value="Atualizar Dados">
+            <input type="submit" class="btn btn-success" value="Atualizar Dados">
         </form>
     </div>
 </body>

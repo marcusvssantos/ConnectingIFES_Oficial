@@ -61,6 +61,7 @@ if ($f_tipo_de_usuario['tipo'] !== "admin") {
             <li class="nav-item"><a href="gerenciar_administrador.php" class="nav-link " aria-current="page">Administradores</a></li>
             <li class="nav-item"><a href="gerenciar_professor.php" class="nav-link " aria-current="page">Professores</a></li>
             <li class="nav-item"><a href="gerenciar_estudante.php" class="nav-link " aria-current="page">Estudantes</a></li>
+            <li class="nav-item"><a href="gerenciar_grupos.php" class="nav-link " aria-current="page">Grupos</a></li>
 
         </ul>
         <form class="nav navbar-nav navbar-right" method="POST">

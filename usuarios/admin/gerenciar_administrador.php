@@ -65,9 +65,10 @@ while ($row = mysqli_fetch_assoc($usuarios_query)) {
                                 <img src="../../icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
                             </a>
                             &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a href="#" style="text-decoration: none;">
+                            <a href="deletar_administrador.php?id=<?php echo $linha['idUsuario']; ?>" onclick="return confirm('Tem certeza que deseja deletar este administrador?');" style="text-decoration: none;">
                                 <img src="../../icons/trash3-fill.svg" width="16" height="16" alt="Ícone">
                             </a>
+
                         </td>
                     <?php echo "</tr>";
                     }

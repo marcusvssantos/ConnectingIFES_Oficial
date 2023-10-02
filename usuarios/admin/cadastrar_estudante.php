@@ -1,7 +1,38 @@
 <?php
 include("header.php");
+
+function conectarDB() {
+    $conexao = new mysqli("localhost", "root", "", "connecting_ifes_oficial");
+    if ($conexao->connect_error) {
+        die("Erro na conexão com o banco de dados: " . $conexao->connect_error);
+    }
+    return $conexao;
+}
+
+function verificarExistencia($conexao, $tabela, $campo, $valor) {
+    $sql = "SELECT idUsuario FROM $tabela WHERE $campo = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("s", $valor);
+    $stmt->execute();
+    $stmt->store_result();
+    return $stmt->num_rows > 0;
+}
+
+function realizarUploadImagem($imagem) {
+    $nome = $imagem["name"];
+    $tempNome = $imagem["tmp_name"];
+    $erro = $imagem["error"];
+    if ($erro === 0) {
+        $diretorioDestino = "../estudante/uploads/foto/";
+        $nomeUnico = time() . '_' . $nome;
+        $caminhoCompleto = $diretorioDestino . $nomeUnico;
+        move_uploaded_file($tempNome, $caminhoCompleto);
+        return $caminhoCompleto;
+    }
+    return false;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Coleta os dados do formulário
     $nome = $_POST["nome"];
     $sobrenome = $_POST["sobrenome"];
     $email = $_POST["email"];
@@ -9,130 +40,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $matricula = $_POST["matricula"];
     $curso = $_POST["curso"];
     $periodo = $_POST["periodo"];
+    $fotoPerfil = realizarUploadImagem($_FILES["fotoPerfil"]);
 
-    // Verifica se uma foto de perfil foi enviada
-    if (isset($_FILES["fotoPerfil"])) {
-        $fotoPerfilNome = $_FILES["fotoPerfil"]["name"];
-        $fotoPerfilTempName = $_FILES["fotoPerfil"]["tmp_name"];
-        $fotoPerfilTamanho = $_FILES["fotoPerfil"]["size"];
-        $fotoPerfilErro = $_FILES["fotoPerfil"]["error"];
+    $conexao = conectarDB();
 
-        // Verifica se não ocorreu nenhum erro no upload
-        if ($fotoPerfilErro === 0) {
-            // Diretório onde a foto de perfil será armazenada (altere para o seu diretório)
-            $diretorioDestino = "../estudante/uploads/foto/";
-
-            // Gere um nome único para a foto de perfil com base no timestamp atual
-            $nomeUnico = time() . '_' . $fotoPerfilNome;
-
-            // Monta o caminho completo para salvar a foto
-            $caminhoCompleto = $diretorioDestino . $nomeUnico;
-
-            // Move a foto de perfil para o diretório de destino
-            move_uploaded_file($fotoPerfilTempName, $caminhoCompleto);
-        } else {
-            echo "Erro no upload da foto de perfil.";
-            exit;
-        }
-    } else {
-        echo "Nenhuma foto de perfil foi enviada.";
-        exit;
-    }
-
-    // Verificar se o e-mail já está cadastrado no banco de dados
-    $conexao = new mysqli("localhost", "root", "", "connecting_ifes_oficial");
-
-    if ($conexao->connect_error) {
-        die("Erro na conexão com o banco de dados: " . $conexao->connect_error);
-    }
-
-    $sqlVerificaEmail = "SELECT idUsuario FROM Usuarios WHERE email = ?";
-    $stmtVerificaEmail = $conexao->prepare($sqlVerificaEmail);
-
-    if ($stmtVerificaEmail === false) {
-        die("Erro na preparação da consulta: " . $conexao->error);
-    }
-
-    $stmtVerificaEmail->bind_param("s", $email);
-    $stmtVerificaEmail->execute();
-    $stmtVerificaEmail->store_result();
-
-    if ($stmtVerificaEmail->num_rows > 0) {
+    if (verificarExistencia($conexao, "Usuarios", "email", $email)) {
         echo "Este e-mail já está cadastrado. Por favor, use outro e-mail.";
-        $stmtVerificaEmail->close();
-        $conexao->close();
-        exit;
+        echo "<br>";  
     }
 
-    $stmtVerificaEmail->close();
-
-    // Verificar se a matrícula já está cadastrada no banco de dados
-    $sqlVerificaMatricula = "SELECT idUsuario FROM Estudantes WHERE matricula = ?";
-    $stmtVerificaMatricula = $conexao->prepare($sqlVerificaMatricula);
-
-    if ($stmtVerificaMatricula === false) {
-        die("Erro na preparação da consulta: " . $conexao->error);
-    }
-
-    $stmtVerificaMatricula->bind_param("s", $matricula);
-    $stmtVerificaMatricula->execute();
-    $stmtVerificaMatricula->store_result();
-
-    if ($stmtVerificaMatricula->num_rows > 0) {
+    if (verificarExistencia($conexao, "Estudantes", "matricula", $matricula)) {
         echo "Esta matrícula já está cadastrada. Por favor, use outra matrícula.";
-        $stmtVerificaMatricula->close();
-        $conexao->close();
-        exit;
+        echo "<br>";  
     }
-
-    $stmtVerificaMatricula->close();
-
-    // Agora você pode inserir os dados do estudante, incluindo o nome do arquivo da foto de perfil,
-    // no banco de dados.
 
     // Insere o usuário na tabela "usuarios"
     $sqlUsuario = "INSERT INTO Usuarios (nome, sobrenome, email, senha, fotoPerfil, tipo) VALUES (?, ?, ?, ?, ?, 'estudante')";
     $stmtUsuario = $conexao->prepare($sqlUsuario);
-
-    if ($stmtUsuario === false) {
-        die("Erro na preparação da consulta: " . $conexao->error);
-    }
-
-    $stmtUsuario->bind_param("sssss", $nome, $sobrenome, $email, $senha, $caminhoCompleto);
-
-    if (!$stmtUsuario->execute()) {
-        echo "Erro ao cadastrar o usuário: " . $stmtUsuario->error;
-        $conexao->close();
-        exit;
-    }
-
-    // Obtém o ID do usuário recém-cadastrado
+    $stmtUsuario->bind_param("sssss", $nome, $sobrenome, $email, $senha, $fotoPerfil);
+    $stmtUsuario->execute();
     $idUsuario = $stmtUsuario->insert_id;
 
-    // Insere o estudante na tabela "estudantes" com base no ID do usuário
+    // Insere o estudante na tabela "estudantes"
     $sqlEstudante = "INSERT INTO Estudantes (matricula, curso, periodo, idUsuario) VALUES (?, ?, ?, ?)";
     $stmtEstudante = $conexao->prepare($sqlEstudante);
-
-    if ($stmtEstudante === false) {
-        die("Erro na preparação da consulta: " . $conexao->error);
-    }
-
     $stmtEstudante->bind_param("ssii", $matricula, $curso, $periodo, $idUsuario);
-
     if ($stmtEstudante->execute()) {
         echo "Cadastro de estudante realizado com sucesso!";
+        header('location: gerenciar_estudante.php');
     } else {
-        echo "Erro ao cadastrar o estudante: " . $stmtEstudante->error;
+        echo "Erro ao cadastrar o estudante: ";
     }
 
-    $stmtUsuario->close();
-    $stmtEstudante->close();
     $conexao->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -141,52 +86,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
     <title>Cadastro de Estudante</title>
 </head>
-
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Cadastro de Estudante</h2>
-        <form method="post" action="cadastro_estudante.php" enctype="multipart/form-data">
+        <form method="post" action="cadastrar_estudante.php" enctype="multipart/form-data">
             <div class="mb-3">
-                <input type="text" id="nome" placeholder="Nome" name="nome" required><br><br>
+                <input type="text" class="form-control" id="nome" placeholder="Nome" name="nome" required>
             </div>
-
             <div class="mb-3">
-                <input type="text" id="sobrenome" placeholder="Sobrenome" name="sobrenome" required><br><br>
-
+                <input type="text" class="form-control" id="sobrenome" placeholder="Sobrenome" name="sobrenome" required>
             </div>
-
             <div class="mb-3">
-                <input type="email" id="email" placeholder="Email" name="email" required><br><br>
-
+                <input type="email" class="form-control" id="email" placeholder="Email" name="email" required>
             </div>
-
             <div class="mb-3">
-                <input type="password" id="senha" placeholder="Senha" name="senha" required><br><br>
-
+                <input type="password" class="form-control" id="senha" placeholder="Senha" name="senha" required>
             </div>
-
             <div class="mb-3">
-                <input type="text" id="matricula" placeholder="Matricula" name="matricula" required><br><br>
-
+                <input type="text" class="form-control" id="matricula" placeholder="Matricula" name="matricula" required>
             </div>
-
             <div class="mb-3">
-                <input type="text" id="curso" name="curso" placeholder="Curso" required><br><br>
-
+                <input type="text" class="form-control" id="curso" placeholder="Curso" name="curso" required>
             </div>
-
             <div class="mb-3">
-                <input type="number" id="periodo" placeholder="Periodo" name="periodo" required><br><br>
+                <input type="number" class="form-control" id="periodo" placeholder="Periodo" name="periodo" required>
             </div>
-
             <div class="mb-3">
-                <label for="fotoPerfil">Foto de Perfil:</label><br>
-                <input type="file" id="fotoPerfil" name="fotoPerfil" required><br><br>
+                <label for="fotoPerfil">Foto de Perfil:</label>
+                <input type="file" class="form-control" id="fotoPerfil" name="fotoPerfil" required>
             </div>
-
             <input type="submit" class="btn btn-success" value="Cadastrar Estudante">
         </form>
     </div>
 </body>
-
 </html>

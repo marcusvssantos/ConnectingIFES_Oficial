@@ -53,15 +53,16 @@ if (!$resultado) {
                         echo "<td>" . $linha["matricula"] . "</td>";
                         echo "<td>" . $linha["curso"] . "</td>";
                         echo "<td>" . $linha["periodo"] . "</td>";
-                        ?>
+                    ?>
                         <td>
                             <a href="editar_estudante.php?id=<?php echo $linha['idUsuario']; ?>" style="text-decoration: none;">
                                 <img src="../../icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
                             </a>
                             &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a href="#" style="text-decoration: none;">
+                            <a href="deletar_estudante.php?id=<?php echo $linha['idUsuario']; ?>" onclick="return confirm('Tem certeza que deseja deletar este estudante?');" style="text-decoration: none;">
                                 <img src="../../icons/trash3-fill.svg" width="16" height="16" alt="Ícone">
                             </a>
+
                         </td>
                     <?php
                         echo "</tr>";

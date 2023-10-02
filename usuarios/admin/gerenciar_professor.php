@@ -52,13 +52,13 @@ if (!$resultado) {
                         echo '<td><img src="' . $linha["fotoPerfil"] . '" style="border-radius: 50%; width: 50px; height: 50px;" alt="Foto de Perfil"></td>';
                         echo "<td>" . $linha["siape"] . "</td>";
                         echo "<td>" . $linha["departamento"] . "</td>";
-                        ?>
+                    ?>
                         <td>
                             <a href="editar_professor.php?id=<?php echo $linha['idUsuario']; ?>" style="text-decoration: none;">
                                 <img src="../../icons/pencil-fill.svg" class="pencil" ; width="16" height="16" alt="Ícone">
                             </a>
                             &nbsp;&nbsp;&nbsp;&nbsp;
-                            <a href="#" style="text-decoration: none;">
+                            <a href="deletar_professor.php?id=<?php echo $linha['idUsuario']; ?>" onclick="return confirm('Tem certeza que deseja deletar este professor?');" style="text-decoration: none;">
                                 <img src="../../icons/trash3-fill.svg" width="16" height="16" alt="Ícone">
                             </a>
                         </td>
