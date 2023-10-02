@@ -18,68 +18,40 @@ $queryEstudantes = "SELECT estudantes.idEstudante, usuarios.nome FROM estudantes
 $resultEstudantes = mysqli_query($conn, $queryEstudantes);
 $estudantes = mysqli_fetch_all($resultEstudantes, MYSQLI_ASSOC);
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrar'])) {
+    $idProfessor = $_POST['professor'];
+    $idGrupo = $_POST['grupo'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $idEstudante = isset($_POST['estudante']) ? $_POST['estudante'] : null;
-    $idProfessor = isset($_POST['professor']) ? $_POST['professor'] : null;
-
-    foreach ($grupos as $grupo) {
-        if (isset($_POST['cadastrarProfessor_' . $grupo["idGrupo"]])) {
-            $idGrupo = $grupo["idGrupo"];
-            $checkQueryProfessor = "SELECT * FROM professoresgrupos WHERE idProfessor = '$idProfessor' AND idGrupo = '$idGrupo'";
-            $checkResultProfessor = mysqli_query($conn, $checkQueryProfessor);
-            if (mysqli_num_rows($checkResultProfessor) > 0) {
-                echo "<script>alert('O professor já está cadastrado neste grupo!');</script>";
-            } else {
-                $insertQueryProfessor = "INSERT INTO professoresgrupos (idProfessor, idGrupo) VALUES ('$idProfessor', '$idGrupo')";
-                if (mysqli_query($conn, $insertQueryProfessor)) {
-                    echo "<script>alert('Professor cadastrado no grupo com sucesso!');</script>";
-                } else {
-                    echo "Erro: " . mysqli_error($conn);
-                }
-            }
-        }
-
-        if (isset($_POST['removerProfessor_' . $grupo["idGrupo"]])) {
-            $idGrupo = $grupo["idGrupo"];
-            $deleteQueryProfessor = "DELETE FROM professoresgrupos WHERE idProfessor = '$idProfessor' AND idGrupo = '$idGrupo'";
-            if (mysqli_query($conn, $deleteQueryProfessor)) {
-                echo "<script>alert('Professor removido do grupo com sucesso!');</script>";
-            } else {
-                echo "Erro: " . mysqli_error($conn);
-            }
+    // Verificar se o professor já está cadastrado no grupo
+    $checkQuery = "SELECT * FROM professoresgrupos WHERE idProfessor = '$idProfessor' AND idGrupo = '$idGrupo'";
+    $checkResult = mysqli_query($conn, $checkQuery);
+    if (mysqli_num_rows($checkResult) > 0) {
+        echo "<script>alert('O professor já está cadastrado neste grupo!');</script>";
+    } else {
+        $insertQuery = "INSERT INTO professoresgrupos (idProfessor, idGrupo) VALUES ('$idProfessor', '$idGrupo')";
+        if (mysqli_query($conn, $insertQuery)) {
+            echo "<script>alert('Professor cadastrado no grupo com sucesso!');</script>";
+        } else {
+            echo "Erro: " . mysqli_error($conn);
         }
     }
+}
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['cadastrarEstudante'])) {
+    $idEstudante = $_POST['estudante'];
+    $idGrupo = $_POST['grupoEstudante'];
 
-    // Loop para verificar cada botão de cadastro
-    foreach ($grupos as $grupo) {
-        if (isset($_POST['cadastrarEstudante_' . $grupo["idGrupo"]])) {
-            $idGrupo = $grupo["idGrupo"];
-            // Verificar se o estudante já está cadastrado no grupo
-            $checkQueryEstudante = "SELECT * FROM estudantesgrupos WHERE idEstudante = '$idEstudante' AND idGrupo = '$idGrupo'";
-            $checkResultEstudante = mysqli_query($conn, $checkQueryEstudante);
-            if (mysqli_num_rows($checkResultEstudante) > 0) {
-                echo "<script>alert('O estudante já está cadastrado neste grupo!');</script>";
-            } else {
-                $insertQueryEstudante = "INSERT INTO estudantesgrupos (idEstudante, idGrupo) VALUES ('$idEstudante', '$idGrupo')";
-                if (mysqli_query($conn, $insertQueryEstudante)) {
-                    echo "<script>alert('Estudante cadastrado no grupo com sucesso!');</script>";
-                } else {
-                    echo "Erro: " . mysqli_error($conn);
-                }
-            }
-        }
-
-        // Loop para verificar cada botão de remoção
-        if (isset($_POST['removerEstudante_' . $grupo["idGrupo"]])) {
-            $idGrupo = $grupo["idGrupo"];
-            $deleteQueryEstudante = "DELETE FROM estudantesgrupos WHERE idEstudante = '$idEstudante' AND idGrupo = '$idGrupo'";
-            if (mysqli_query($conn, $deleteQueryEstudante)) {
-                echo "<script>alert('Estudante removido do grupo com sucesso!');</script>";
-            } else {
-                echo "Erro: " . mysqli_error($conn);
-            }
+    // Verificar se o estudante já está cadastrado no grupo
+    $checkQueryEstudante = "SELECT * FROM estudantesgrupos WHERE idEstudante = '$idEstudante' AND idGrupo = '$idGrupo'";
+    $checkResultEstudante = mysqli_query($conn, $checkQueryEstudante);
+    if (mysqli_num_rows($checkResultEstudante) > 0) {
+        echo "<script>alert('O estudante já está cadastrado neste grupo!');</script>";
+    } else {
+        $insertQueryEstudante = "INSERT INTO estudantesgrupos (idEstudante, idGrupo) VALUES ('$idEstudante', '$idGrupo')";
+        if (mysqli_query($conn, $insertQueryEstudante)) {
+            echo "<script>alert('Estudante cadastrado no grupo com sucesso!');</script>";
+        } else {
+            echo "Erro: " . mysqli_error($conn);
         }
     }
 }
@@ -151,32 +123,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ?>
                     </select>
                 </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nome do Grupo</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="mb-3">
+                    <label for="grupo" class="form-label">Grupo</label>
+                    <select class="form-control" id="grupo" name="grupo">
                         <?php
-                        $selectedProfessor = $_POST['professor'] ?? $professores[0]['idProfessor'];
                         foreach ($grupos as $grupo) {
-                            echo "<tr>";
-                            echo "<td>" . $grupo["nome"] . "</td>";
-
-                            $checkQueryProfessor = "SELECT * FROM professoresgrupos WHERE idProfessor = '$selectedProfessor' AND idGrupo = '" . $grupo["idGrupo"] . "'";
-                            $checkResultProfessor = mysqli_query($conn, $checkQueryProfessor);
-                            if (mysqli_num_rows($checkResultProfessor) > 0) {
-                                echo "<td><button type='submit' name='removerProfessor_" . $grupo["idGrupo"] . "' class='btn btn-danger'>Remover</button></td>";
-                            } else {
-                                echo "<td><button type='submit' name='cadastrarProfessor_" . $grupo["idGrupo"] . "' class='btn btn-success'>Cadastrar</button></td>";
-                            }
-                            echo "</tr>";
+                            echo "<option value='" . $grupo["idGrupo"] . "'>" . $grupo["nome"] . "</option>";
                         }
                         ?>
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                <button type="submit" name="cadastrar" class="btn btn-success">Cadastrar</button>
             </form>
         </div>
 
@@ -185,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form method="POST">
                 <div class="mb-3">
                     <label for="estudante" class="form-label">Estudante</label>
-                    <select class="form-control" id="estudante" name="estudante" onchange="this.form.submit()">
+                    <select class="form-control" id="estudante" name="estudante">
                         <?php
                         foreach ($estudantes as $estudante) {
                             echo "<option value='" . $estudante["idEstudante"] . "'>" . $estudante["nome"] . "</option>";
@@ -193,44 +150,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ?>
                     </select>
                 </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nome do Grupo</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <div class="mb-3">
+                    <label for="grupoEstudante" class="form-label">Grupo</label>
+                    <select class="form-control" id="grupoEstudante" name="grupoEstudante">
                         <?php
-                        $selectedStudent = $_POST['estudante'] ?? $estudantes[0]['idEstudante'];
                         foreach ($grupos as $grupo) {
-                            echo "<tr>";
-                            echo "<td>" . $grupo["nome"] . "</td>";
-
-                            $checkQueryEstudante = "SELECT * FROM estudantesgrupos WHERE idEstudante = '$selectedStudent' AND idGrupo = '" . $grupo["idGrupo"] . "'";
-                            $checkResultEstudante = mysqli_query($conn, $checkQueryEstudante);
-                            if (mysqli_num_rows($checkResultEstudante) > 0) {
-                                echo "<td><button type='submit' name='removerEstudante_" . $grupo["idGrupo"] . "' class='btn btn-danger'>Remover</button></td>";
-                            } else {
-                                echo "<td><button type='submit' name='cadastrarEstudante_" . $grupo["idGrupo"] . "' class='btn btn-success'>Cadastrar</button></td>";
-                            }
-                            echo "</tr>";
+                            echo "<option value='" . $grupo["idGrupo"] . "'>" . $grupo["nome"] . "</option>";
                         }
                         ?>
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                <button type="submit" name="cadastrarEstudante" class="btn btn-success">Cadastrar</button>
             </form>
         </div>
-
-        <?php
-        function isStudentRegisteredInGroup($idEstudante, $idGrupo)
-        {
-            global $conn;
-            $checkQuery = "SELECT * FROM estudantesgrupos WHERE idEstudante = '$idEstudante' AND idGrupo = '$idGrupo'";
-            $checkResult = mysqli_query($conn, $checkQuery);
-            return mysqli_num_rows($checkResult) > 0;
-        }
-        ?>
 
         <script>
             document.getElementById("viewGroups").addEventListener("click", function() {
@@ -252,6 +184,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
         </script>
     </div>
+
+    <div class="container mt-6">
+        <h2>Grupos</h2>
+        <div class="row">
+            <?php foreach ($grupos as $grupo) : ?>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <?php echo $grupo['nome']; ?>
+                        </div>
+                        <div class="card-body">
+                            <h5>Professores</h5>
+                            <ul>
+                                <?php
+                                $queryProfessoresGrupo = "SELECT usuarios.nome FROM professoresgrupos JOIN professores ON professoresgrupos.idProfessor = professores.idProfessor JOIN usuarios ON professores.idUsuario = usuarios.idUsuario WHERE professoresgrupos.idGrupo = " . $grupo['idGrupo'];
+                                $resultProfessoresGrupo = mysqli_query($conn, $queryProfessoresGrupo);
+                                $professoresGrupo = mysqli_fetch_all($resultProfessoresGrupo, MYSQLI_ASSOC);
+                                foreach ($professoresGrupo as $professorGrupo) :
+                                ?>
+                                    <li><?php echo $professorGrupo['nome']; ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <h5>Estudantes</h5>
+                            <ul>
+                                <?php
+                                $queryEstudantesGrupo = "SELECT usuarios.nome FROM estudantesgrupos JOIN estudantes ON estudantesgrupos.idEstudante = estudantes.idEstudante JOIN usuarios ON estudantes.idUsuario = usuarios.idUsuario WHERE estudantesgrupos.idGrupo = " . $grupo['idGrupo'];
+                                $resultEstudantesGrupo = mysqli_query($conn, $queryEstudantesGrupo);
+                                $estudantesGrupo = mysqli_fetch_all($resultEstudantesGrupo, MYSQLI_ASSOC);
+                                foreach ($estudantesGrupo as $estudanteGrupo) :
+                                ?>
+                                    <li><?php echo $estudanteGrupo['nome']; ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
 </body>
 
 </html>
