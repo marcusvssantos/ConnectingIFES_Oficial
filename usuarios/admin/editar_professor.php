@@ -137,33 +137,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2 class="mb-4">Editar Professor</h2>
         <form method="post" action="editar_professor.php?id=<?php echo $idProfessor; ?>" enctype="multipart/form-data">
             <div class="mb-3">
-                <input type="text" id="nome" placeholder="Nome" name="nome" value="<?php echo $nome; ?>" required><br><br>
+                <input type="text" class="form-control" id="nome" placeholder="Nome" name="nome" value="<?php echo $nome; ?>" required><br>
             </div>
 
             <div class="mb-3">
-                <input type="text" id="sobrenome" placeholder="Sobrenome" name="sobrenome" value="<?php echo $sobrenome; ?>" required><br><br>
+                <input type="text" class="form-control" id="sobrenome" placeholder="Sobrenome" name="sobrenome" value="<?php echo $sobrenome; ?>" required><br>
             </div>
 
             <div class="mb-3">
-                <input type="email" id="email" placeholder="Email" name="email" value="<?php echo $email; ?>" required><br><br>
+                <input type="email" class="form-control" id="email" placeholder="Email" name="email" value="<?php echo $email; ?>" required><br>
             </div>
 
             <div class="mb-3">
-                <input type="text" id="departamento" placeholder="Departamento" name="departamento" value="<?php echo $departamento; ?>" required><br><br>
+                <input type="text" class="form-control" id="departamento" placeholder="Departamento" name="departamento" value="<?php echo $departamento; ?>" required><br>
             </div>
 
             <div class="mb-3">
-                <input type="text" id="siape" placeholder="SIAPE" name="siape" value="<?php echo $siape; ?>" required><br><br>
+                <input type="text" class="form-control" id="siape" placeholder="SIAPE" name="siape" value="<?php echo $siape; ?>" required><br>
             </div>
 
             <div class="mb-3">
                 <label for="novaFotoPerfil">Nova Foto de Perfil:</label><br>
-                <input type="file" id="novaFotoPerfil" name="novaFotoPerfil"><br><br>
+                <input type="file" class="form-control" id="novaFotoPerfil" name="novaFotoPerfil"><br>
             </div>
 
             <div class="mb-3">
                 <label for="fotoPerfil">Foto de Perfil Atual:</label><br>
-                <img src="<?php echo $fotoPerfil; ?>" style="border-radius: 50%; width: 50px; height: 50px;" alt="Foto de Perfil Atual"><br><br>
+                <img src="<?php echo $fotoPerfil; ?>" style="border-radius: 50%; width: 50px; height: 50px;" alt="Foto de Perfil Atual"><br>
             </div>
 
             <input type="submit" class="btn btn-primary" value="Atualizar Dados">

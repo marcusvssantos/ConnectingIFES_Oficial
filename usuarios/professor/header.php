@@ -21,6 +21,6 @@ $logado = $_SESSION['login'];
 $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$logado'");
 $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
-if ($f_tipo_de_usuario['tipo'] !== "Administrador") {
+if ($f_tipo_de_usuario['tipo'] !== "professor") {
     echo '<script>window.history.back();</script>';
 }

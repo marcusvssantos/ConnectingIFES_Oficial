@@ -41,7 +41,7 @@ if (mysqli_num_rows($result) > 0) {
         header("Location: usuarios/estudante/estudante.php");
         exit();
     } elseif ($f_tipo_de_usuario['tipo'] == "professor") {
-        header("Location: usuarios/professor/professor.php");
+        header("Location: usuarios/professor/index_professor.php");
         exit();
     } elseif ($f_tipo_de_usuario['tipo'] == "admin") {
         header("Location: usuarios/admin/index_administrador.php");
