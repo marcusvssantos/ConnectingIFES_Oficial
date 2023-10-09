@@ -148,6 +148,7 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      z-index: 1000;
     }
 
     .topbar a {
@@ -226,6 +227,7 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
     <a href="#services"><i class="bi bi-gear"></i></a>
     <a href="#clients"><i class="bi bi-people"></i></a>
     <a href="#contact"><i class="bi bi-envelope"></i></a>
+    <a href="#contact" data-toggle="modal" data-target="#postModal" title="Adicionar Nova Publicação"><i class="bi bi-file-earmark-plus"></i></a>
   </div>
 
 
