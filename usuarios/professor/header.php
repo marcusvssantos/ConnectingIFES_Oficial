@@ -9,6 +9,7 @@ if ((!isset($_SESSION['login']) == true) and (!isset($_SESSION['senha']) == true
 
 
 
+
 if (isset($_POST['sair'])) {
   unset($_SESSION['login']);
   unset($_SESSION['senha']);
@@ -17,8 +18,12 @@ if (isset($_POST['sair'])) {
 
 $logado = $_SESSION['login'];
 
+
 $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$logado'");
 $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
+
+
+
 
 if ($f_tipo_de_usuario['tipo'] !== "professor") {
   echo '<script>window.history.back();</script>';
@@ -51,7 +56,7 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
       overflow-x: hidden;
       transition: 0.5s;
       padding-top: 20px;
-      margin-top: 40px;
+      margin-top: 60px;
     }
 
     .sidebar a {
@@ -78,7 +83,7 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
       transition: 0.5s;
       padding-top: 20px;
       border-left: 1px solid #32A041;
-      margin-top: 40px;
+      margin-top: 60px;
     }
 
     .sidebar-right a {
@@ -136,12 +141,13 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
 
     .topbar {
       width: 100%;
-      height: 40px;
+      height: 60px;
       background: linear-gradient(to bottom, rgba(70, 180, 85, 1) 0%, rgba(50, 160, 65, 1) 25%, rgba(30, 140, 45, 1) 75%);
       position: fixed;
       top: 0;
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
 
     .topbar a {
@@ -156,7 +162,8 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
       border: 1px solid #000000;
       background: #FFFFFF;
       border-radius: 50%;
-      width: 25px;
+      width: 50px;
+      height: 50px;
       margin-right: 10px;
     }
 
@@ -200,10 +207,19 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
 </head>
 
 <body>
-<div class="topbar">
-    <a><img src="../../img/ifes-vertical-cor.png"></a>
-    <a style="color: #FFFFFF;"> Área do Professor </a>
-    <a style="color: #FFFFFF;"> ConnectingIFES </a>
+  <div class="topbar">
+    <div class="left-items">
+      <a><img src="<?php echo $f_tipo_de_usuario["fotoPerfil"]; ?>"></a>
+      <a style="color: #FFFFFF;"> <?php echo $f_tipo_de_usuario["nome"] . " " . $f_tipo_de_usuario["sobrenome"] ; ?> </a>
+    </div>
+    <div class="center-items">
+      <a style="color: #FFFFFF;"> Área do Professor </a>
+    </div>
+    <div class="right-items">
+      <a style="color: #FFFFFF;"> ConnectingIFES </a>
+    </div>
+
+
   </div>
   <div class="sidebar">
     <a href="#home"><i class="bi bi-house-door"></i></a>
@@ -268,7 +284,7 @@ if ($f_tipo_de_usuario['tipo'] !== "professor") {
     </div>
   </div>
 
-  
+
 
 
   <script src="../../bootstrap/js/bootstrap.min.js"></script>

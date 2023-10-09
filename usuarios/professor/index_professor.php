@@ -63,6 +63,7 @@ include("header.php");
 <body>
 
     <div class="main-content">
+
         <div class="post">
             <div class="post-header">
                 <img src="path/to/profile/image.jpg" alt="Foto de perfil">
