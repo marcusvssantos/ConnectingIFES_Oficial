@@ -50,20 +50,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["novaFotoPerfil"]) && $_FILES["novaFotoPerfil"]["error"] === 0) {
         $fotoPerfilNome = $_FILES["novaFotoPerfil"]["name"];
         $fotoPerfilTempName = $_FILES["novaFotoPerfil"]["tmp_name"];
-
-        // Diretório onde a nova foto de perfil será armazenada (altere para o seu diretório)
         $diretorioDestino = "../professor/uploads/foto/";
-
-        // Gere um nome único para a nova foto de perfil com base no timestamp atual
         $nomeUnico = time() . '_' . $fotoPerfilNome;
-
-        // Monta o caminho completo para salvar a nova foto
         $caminhoCompleto = $diretorioDestino . $nomeUnico;
 
-        // Move a nova foto de perfil para o diretório de destino
         move_uploaded_file($fotoPerfilTempName, $caminhoCompleto);
 
-        // Atualiza o caminho da foto de perfil no banco de dados
         $sqlAtualizaFotoPerfil = "UPDATE Usuarios SET fotoPerfil = ? WHERE idUsuario = ?";
         $stmtAtualizaFotoPerfil = $conn->prepare($sqlAtualizaFotoPerfil);
 
