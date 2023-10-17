@@ -28,7 +28,7 @@ include("header.php");
             background-color: #f8f9fa;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
-            z-index: 1;
+            z-index: 2;
         }
 
         .publicacao-card:hover {

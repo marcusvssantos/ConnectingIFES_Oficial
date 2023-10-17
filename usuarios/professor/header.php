@@ -8,8 +8,6 @@ if ((!isset($_SESSION['login']) == true) and (!isset($_SESSION['senha']) == true
 }
 
 
-
-
 if (isset($_POST['sair'])) {
   unset($_SESSION['login']);
   unset($_SESSION['senha']);
@@ -23,7 +21,8 @@ $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$l
 $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
 
-
+$sql = "SELECT * FROM usuarios"; // ajuste a consulta conforme necessário
+$resultado = $conn->query($sql);
 
 if ($f_tipo_de_usuario['tipo'] !== "professor") {
   echo '<script>window.history.back();</script>';
@@ -88,6 +87,45 @@ if (isset($_POST['post_publicacao'])) {
 
 
 $currentPage = basename($_SERVER['PHP_SELF']);
+
+
+function enviarMensagem($remetente, $destinatario, $texto, $imagem = null)
+{
+  global $conn;
+  $dataEnvio = date("Y-m-d");
+  $stmt = $conn->prepare("INSERT INTO mensagens (remetente, destinatario, texto, imagem, dataEnvio) VALUES (?, ?, ?, ?, ?)");
+  $stmt->bind_param("iisbs", $remetente, $destinatario, $texto, $imagem, $dataEnvio);
+  $stmt->execute();
+  $stmt->close();
+}
+
+function receberMensagens($idUsuario)
+{
+  global $conn;
+  $sql = "SELECT * FROM mensagens WHERE destinatario = $idUsuario ORDER BY dataEnvio DESC";
+  $result = $conn->query($sql);
+  $mensagens = [];
+  while ($row = $result->fetch_assoc()) {
+    $mensagens[] = $row;
+  }
+  return $mensagens;
+}
+
+function listarConversas($idUsuario)
+{
+  global $conn;
+  $sql = "SELECT DISTINCT remetente, destinatario FROM mensagens WHERE remetente = $idUsuario OR destinatario = $idUsuario";
+  $result = $conn->query($sql);
+  $conversas = [];
+  while ($row = $result->fetch_assoc()) {
+    if ($row['remetente'] == $idUsuario) {
+      $conversas[] = $row['destinatario'];
+    } else {
+      $conversas[] = $row['remetente'];
+    }
+  }
+  return array_unique($conversas);
+}
 ?>
 
 
@@ -99,155 +137,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="../../img/Logo ConnectingIFES.png">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-
-    /* Estilos para o menu da esquerda */
-    .sidebar {
-      height: 100vh;
-      width: 80px;
-      background: linear-gradient(to bottom, rgba(70, 180, 85, 1) 0%, rgba(50, 160, 65, 1) 25%, rgba(30, 140, 45, 1) 75%);
-      position: fixed;
-      top: 0;
-      left: 0;
-      overflow-x: hidden;
-      transition: 0.5s;
-      padding-top: 20px;
-      margin-top: 60px;
-    }
-
-    .sidebar a {
-      padding: 10px 15px 10px 30px;
-      text-decoration: none;
-      font-size: 25px;
-      color: white;
-      display: block;
-      transition: 0.3s;
-    }
-
-    .sidebar a:hover {
-      color: #E0191E;
-    }
-
-    .sidebar-right {
-      height: 100vh;
-      width: 150px;
-      background: linear-gradient(to bottom, rgba(70, 180, 85, 1) 0%, rgba(50, 160, 65, 1) 25%, rgba(30, 140, 45, 1) 75%);
-      position: fixed;
-      top: 0;
-      right: 0;
-      overflow-x: hidden;
-      transition: 0.5s;
-      padding-top: 20px;
-      border-left: 1px solid #32A041;
-      margin-top: 60px;
-    }
-
-    .sidebar-right a {
-      padding: 10px 15px 10px 30px;
-      text-decoration: none;
-      font-size: 25px;
-      color: white;
-      display: block;
-      transition: 0.3s;
-    }
-
-    .sidebar-right a:hover {
-      color: #E0191E;
-    }
-
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #32A041;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #E0191E;
-    }
-
-    .topbar {
-      width: 100%;
-      height: 60px;
-      background: linear-gradient(to bottom, rgba(70, 180, 85, 1) 0%, rgba(50, 160, 65, 1) 25%, rgba(30, 140, 45, 1) 75%);
-      position: fixed;
-      top: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 1000;
-    }
-
-    .topbar a {
-      color: #FFFFFF;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 2px 5px;
-    }
-
-    .topbar img {
-      border: 1px solid #000000;
-      background: #FFFFFF;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      margin-right: 10px;
-    }
-
-
-    .main-content {
-      margin-left: 85px;
-      margin-right: 155px;
-      margin-top: 55px;
-      padding: 20px;
-      background-color: #FFFFFF;
-      /* Branco */
-    }
-
-    .friend-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .friend-item img {
-      border: 1px solid #000000;
-      background: #FFFFFF;
-      border-radius: 50%;
-      width: 25px;
-      margin-right: 10px;
-
-    }
-
-    .friend-item a {
-      color: #FFFFFF;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: bold;
-      padding: 2px 5px;
-    }
-
-    .friend-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .right-items {
-      display: flex;
-      align-items: center;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="estilo_professor.css" media="screen" />
 </head>
 
 <body>
@@ -287,54 +179,21 @@ $currentPage = basename($_SERVER['PHP_SELF']);
       <a><i style="color: #FFFFFF;" class="bi bi-chat-dots"></i></a>
       <a style="color: #FFFFFF;"> Conversas </a>
     </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">João</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Pedro</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Lucas</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">João</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Pedro</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Lucas</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">João</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Pedro</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Lucas</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">João</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Pedro</a>
-    </div>
-    <div class="friend-item">
-      <a href="#friend1"><img src="../../img/ifes-vertical-cor.png" alt="Amigo 1"></a>
-      <a href="#friend1" style="color: #FFFFFF;">Lucas</a>
-    </div>
+
+    <?php
+    if ($resultado->num_rows > 0) {
+      while ($usuario = $resultado->fetch_assoc()) {
+        echo '<div class="friend-item" onclick="openChat(\'' . $usuario['nome'] . '\', \'' . $usuario['idUsuario'] . '\')">';
+        echo '  <a href="javascript:void(0);"><img src="../../img/ifes-vertical-cor.png" alt="Amigo"></a>'; // ajuste o caminho da imagem conforme necessário
+        echo '  <a href="javascript:void(0);" style="color: #FFFFFF;">' . $usuario['nome'] . '</a>'; // assumindo que 'nome' é a coluna com o nome do usuário
+        echo '</div>';
+      }
+    } else {
+      echo "0 resultados"; // Nenhum usuário encontrado
+    }
+    ?>
+
+  </div>
   </div>
 
 
@@ -401,7 +260,73 @@ $currentPage = basename($_SERVER['PHP_SELF']);
       </div>
     </div>
   </div>
-  <script src="../../bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Estrutura básica do chat -->
+  <div id="chatPopup" class="chat-popup">
+    <div id="chatHeader" class="chat-header">
+      <span id="chatUsername">Nome do Usuário</span>
+      <span class="chat-header-buttons">
+        <button class="close" onclick="closeChat()">x</button>
+        <button class="close" id="chatMinimize" class="chat-minimize">-&nbsp;&nbsp;</button>
+        <button class="close" id="chatMaximize" class="chat-maximize" style="visibility: hidden;">+</button>
+      </span>
+    </div>
+    <div id="chatContent" class="chat-content">
+      <iframe id="chatFrame" src="chat.php" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+
+  </div>
+
+
+
+
+  <script>
+    // Função para abrir o chat
+    function openChat(nome, userId) {
+      document.getElementById('chatPopup').style.display = 'block';
+      document.getElementById('chatUsername').textContent = nome;
+
+      // Definir o 'src' do iframe com um parâmetro de consulta para o ID do usuário
+      var chatFrame = document.getElementById('chatFrame'); // Supondo que 'chatFrame' é o ID do seu iframe
+      chatFrame.src = 'chat.php?userId=' + userId;
+    }
+
+    // Função para minimizar o chat
+    function minimizeChat() {
+      document.getElementById('chatContent').style.display = 'none';
+      document.getElementById('chatMinimize').style.visibility = 'hidden';
+      document.getElementById('chatMaximize').style.visibility = 'visible';
+    }
+
+    // Função para maximizar o chat
+    function maximizeChat() {
+      document.getElementById('chatContent').style.display = 'block';
+      document.getElementById('chatMinimize').style.visibility = 'visible';
+      document.getElementById('chatMaximize').style.visibility = 'hidden';
+    }
+
+    // Enviar mensagem
+    function sendMessage() {
+      var message = document.getElementById("chatInput").value;
+      if (message) { // Se houver uma mensagem
+        document.getElementById("chatInput").value = ""; // Limpar o input
+      }
+    }
+
+    // Event listeners para os botões de minimizar e maximizar
+    document.getElementById('chatMinimize').addEventListener('click', minimizeChat);
+    document.getElementById('chatMaximize').addEventListener('click', maximizeChat);
+
+    function closeChat() {
+      document.getElementById("chatPopup").style.display = "none";
+    }
+  </script>
+
+
+  <!-- Incluindo Bootstrap JS (opcional) -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+<script src="../../bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>
