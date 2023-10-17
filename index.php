@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connecting IFES</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="img/Logo ConnectingIFES.png">
     <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
     <style>
         body {
@@ -38,7 +39,8 @@
 
         input[type="email"],
         input[type="password"] {
-            width: calc(100% - 20px); /* Subtrai 20px para considerar o padding */
+            width: calc(100% - 20px);
+            /* Subtrai 20px para considerar o padding */
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
@@ -59,13 +61,27 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        .images-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .images-container img {
+            max-width: 50%;
+            height: auto;
+        }
     </style>
 </head>
 
 <body>
     <div class="login-container">
-        <img src="img/logoIFES.svg">
-        <h2>Login</h2>
+        <div class="images-container"> <!-- Div envolvente adicionada aqui -->
+            <img src="img/logoIFES.svg">
+            <img src="img/Logo ConnectingIFES.png">
+        </div>
+        <h2>Login ConnectingIFES</h2>
         <form method="POST" action="login.php" id="formlogin" name="formlogin">
             <input type="email" placeholder="Login" name="login">
             <input type="password" placeholder="Senha" name="senha">

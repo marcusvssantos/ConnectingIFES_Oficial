@@ -12,6 +12,7 @@ include("header.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="img\Logo ConnectingIFES.png">
     <style>
         body {
             font-family: Arial, sans-serif;

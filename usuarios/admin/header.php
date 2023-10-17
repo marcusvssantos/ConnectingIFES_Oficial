@@ -32,6 +32,7 @@ if ($f_tipo_de_usuario['tipo'] !== "admin") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../img/Logo ConnectingIFES.png">
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
     <style>
         .nav-pills .nav-link {
