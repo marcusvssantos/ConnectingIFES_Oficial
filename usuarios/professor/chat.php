@@ -18,22 +18,55 @@ $remetente = mysqli_fetch_assoc($pegaRemetenteChat);
 $pegaDestinatarioChat = mysqli_query($conn, "SELECT * FROM usuarios WHERE idUsuario = '$destinatarioChat'");
 $destinatario = mysqli_fetch_assoc($pegaDestinatarioChat);
 
+function realizarUploadImagemChat($imagem)
+{
+    $nome = $imagem["name"];
+    $tempNome = $imagem["tmp_name"];
+    $erro = $imagem["error"];
+    if ($erro === 0) {
+        $diretorioDestino = "../../uploads/chat/";
+        $nomeUnico = time() . '_' . $nome;
+        $caminhoCompleto = $diretorioDestino . $nomeUnico;
+        move_uploaded_file($tempNome, $caminhoCompleto);
+        return $caminhoCompleto;
+    }
+    return false;
+}
 
 // Verificar se a mensagem foi enviada
 if (isset($_POST['send'])) {
     $msg = $_POST['text'];
     $data = date("Y-m-d H:i:s");
+    $imagemPublicacao = realizarUploadImagemChat($_FILES["imagemChat"]);
+
 
     if ($msg == "") {
         echo "<h3>Não pode enviar uma mensagem em branco</h3>";
     } else {
-        $query = "INSERT INTO mensagens (`remetente`, `destinatario`, `texto`, `dataEnvio`) VALUES ('" . $remetente['idUsuario'] . "', '" . $destinatario['idUsuario'] . "', '" . mysqli_real_escape_string($conn, $msg) . "', '$data')";
-        $data = mysqli_query($conn, $query);
-        if ($data) {
+        // Preparar a consulta SQL
+        $stmt = $conn->prepare("INSERT INTO mensagens (`remetente`, `destinatario`, `texto`, `imagem`, `dataEnvio`) VALUES (?, ?, ?, ?, ?)");
+
+        // Verificar se a preparação foi bem-sucedida
+        if ($stmt === false) {
+            trigger_error("Erro na preparação da consulta: " . $conn->error, E_USER_ERROR);
+            exit;
+        }
+
+        // Vincular os parâmetros à sua consulta preparada
+        $stmt->bind_param("iisss", $remetente['idUsuario'], $destinatario['idUsuario'], $msg, $imagemPublicacao, $data);
+
+        // Executar a consulta preparada
+        $success = $stmt->execute();
+
+        // Verificar se a execução foi bem-sucedida
+        if ($success) {
             header("Location: " . $_SERVER['PHP_SELF'] . "?userId=" . $destinatarioChat); // Recarrega a página para atualizar as mensagens
         } else {
-            echo "<h3>Erro ao enviar a mensagem</h3>" . mysqli_error($conn);
+            echo "<h3>Erro ao enviar a mensagem</h3>" . $stmt->error;
         }
+
+        // Fechar a declaração
+        $stmt->close();
     }
 }
 
@@ -113,7 +146,7 @@ if (isset($_POST['send'])) {
         $dataAtual = "";
 
         while ($mensagem = mysqli_fetch_assoc($mensagens)) {
-            // Obter a data da mensagem atual
+            // ... [Código para processar a data, etc.]
             $dataHora = $mensagem['dataEnvio'];
             $dataMensagem = date("d/m/Y", strtotime($dataHora)); // Formata a data para "dia/mês/ano"
 
@@ -125,27 +158,50 @@ if (isset($_POST['send'])) {
                 // Imprima um cabeçalho com a nova data
                 echo "<div class='data-header'>" . $dataAtual . "</div> ";
             }
-
             // Agora, processamos a mensagem como antes
             $posicao = ($mensagem['remetente'] == $remetente['idUsuario']) ? 'remetente' : 'destinatario';
             echo "<div class='message $posicao'>";
             echo "<div class='bubble'>";
             echo htmlspecialchars($mensagem['texto']); // Use htmlspecialchars para evitar XSS
+        
+            // Verifique se há uma imagem associada à mensagem
+            if (!empty($mensagem['imagem'])) {
+                // Ajuste o caminho da imagem se necessário. Aqui estou assumindo que 'imagem' contém o caminho relativo da imagem.
+                echo "<div><img src='" . htmlspecialchars($mensagem['imagem']) . "' alt='imagem-chat' style='max-width:100px; max-height:100px;'></div>"; // Ajuste o estilo conforme necessário
+            }
+        
             $hora = date("H:i", strtotime($dataHora)); // Formata a data para pegar apenas a hora e os minutos
-
             echo "<div class='timestamp'>" . $hora . "</div>"; // Exibe a hora
             echo "</div>";
             echo "</div>";
+        
         }
         ?>
     </div>
 
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <input type="text" name="text" placeholder="Digite sua mensagem aqui" autocomplete="off">
+        <input type="file" name="imagemChat" id="imagemChat" accept="image/*" onchange="checkFile(event)">
         <input type="submit" name="send" value="Enviar">
     </form>
 
+    <script type="text/javascript">
+        function checkFile(event) {
+            // Seleciona o arquivo
+            var file = event.target.files[0];
+
+            // Tamanho máximo em bytes (5MB neste exemplo)
+            var maxSize = 2 * 1024 * 1024;
+
+            // Verifica o tamanho do arquivo
+            if (file.size > maxSize) {
+                alert("O arquivo selecionado é muito grande! Por favor, selecione um arquivo de até 2MB.");
+                // Limpa o campo de seleção de arquivo
+                event.target.value = "";
+            }
+        }
+    </script>
     <script>
         // Pega o elemento que queremos aplicar o "arrastar para rolar"
         const messagesContainer = document.getElementById('messages-container');

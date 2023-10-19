@@ -89,43 +89,6 @@ if (isset($_POST['post_publicacao'])) {
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 
-function enviarMensagem($remetente, $destinatario, $texto, $imagem = null)
-{
-  global $conn;
-  $dataEnvio = date("Y-m-d");
-  $stmt = $conn->prepare("INSERT INTO mensagens (remetente, destinatario, texto, imagem, dataEnvio) VALUES (?, ?, ?, ?, ?)");
-  $stmt->bind_param("iisbs", $remetente, $destinatario, $texto, $imagem, $dataEnvio);
-  $stmt->execute();
-  $stmt->close();
-}
-
-function receberMensagens($idUsuario)
-{
-  global $conn;
-  $sql = "SELECT * FROM mensagens WHERE destinatario = $idUsuario ORDER BY dataEnvio DESC";
-  $result = $conn->query($sql);
-  $mensagens = [];
-  while ($row = $result->fetch_assoc()) {
-    $mensagens[] = $row;
-  }
-  return $mensagens;
-}
-
-function listarConversas($idUsuario)
-{
-  global $conn;
-  $sql = "SELECT DISTINCT remetente, destinatario FROM mensagens WHERE remetente = $idUsuario OR destinatario = $idUsuario";
-  $result = $conn->query($sql);
-  $conversas = [];
-  while ($row = $result->fetch_assoc()) {
-    if ($row['remetente'] == $idUsuario) {
-      $conversas[] = $row['destinatario'];
-    } else {
-      $conversas[] = $row['remetente'];
-    }
-  }
-  return array_unique($conversas);
-}
 ?>
 
 
@@ -225,7 +188,7 @@ function listarConversas($idUsuario)
             <!-- Upload de imagem -->
             <div class="form-group">
               <label for="imagemPost">Imagem</label>
-              <input type="file" class="form-control" id="imagemPost" name="imagemPost">
+              <input type="file" class="form-control" id="imagemPost" name="imagemPost" onchange="checkFiles(event)">
             </div>
 
             <!-- Seleção do grupo -->
@@ -321,7 +284,22 @@ function listarConversas($idUsuario)
       document.getElementById("chatPopup").style.display = "none";
     }
   </script>
+  <script type="text/javascript">
+        function checkFiles(event) {
+            // Seleciona o arquivo
+            var file = event.target.files[0];
 
+            // Tamanho máximo em bytes (5MB neste exemplo)
+            var maxSize = 2 * 1024 * 1024;
+
+            // Verifica o tamanho do arquivo
+            if (file.size > maxSize) {
+                alert("O arquivo selecionado é muito grande! Por favor, selecione um arquivo de até 2MB.");
+                // Limpa o campo de seleção de arquivo
+                event.target.value = "";
+            }
+        }
+    </script>
 
   <!-- Incluindo Bootstrap JS (opcional) -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
