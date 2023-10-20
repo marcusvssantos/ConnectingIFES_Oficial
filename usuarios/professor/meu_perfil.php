@@ -49,7 +49,7 @@ if (isset($_POST['edit_publicacao'])) {
             unlink($imagemAtual);
         }
 
-        $caminhoImagem = "uploads/publicações/" . $_FILES['editImagemPost']['name'];
+        $caminhoImagem = "../../uploads/publicações/" . $_FILES['editImagemPost']['name'];
         move_uploaded_file($_FILES['editImagemPost']['tmp_name'], $caminhoImagem);
         $sql = "UPDATE publicacoes SET titulo = :titulo, conteudo = :conteudo, imagemPublicacao = :imagemPublicacao WHERE idPublicacao = :idPublicacao";
         $stmt = $pdo->prepare($sql);
@@ -265,7 +265,7 @@ if (isset($_POST['edit_publicacao'])) {
 
                         <div class="form-group">
                             <label for="editImagemPost">Imagem</label>
-                            <input type="file" class="form-control" id="editImagemPost" name="editImagemPost">
+                            <input type="file" class="form-control" onchange="checkFiles(event)" id="editImagemPost" name="editImagemPost">
                         </div>
 
                         <div class="form-group">

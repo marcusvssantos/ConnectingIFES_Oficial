@@ -30,7 +30,7 @@ try {
             if (isset($_FILES["fotoPerfil"]) && $_FILES["fotoPerfil"]["error"] === 0) {
                 $fotoPerfilNome = $_FILES["fotoPerfil"]["name"];
                 $fotoPerfilTempName = $_FILES["fotoPerfil"]["tmp_name"];
-                $diretorioDestino = "../professor/uploads/foto/";
+                $diretorioDestino = "../../uploads/foto/";
                 $nomeUnico = time() . '_' . $fotoPerfilNome;
                 $caminhoCompleto = $diretorioDestino . $nomeUnico;
                 

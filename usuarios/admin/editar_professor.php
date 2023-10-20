@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES["novaFotoPerfil"]) && $_FILES["novaFotoPerfil"]["error"] === 0) {
         $fotoPerfilNome = $_FILES["novaFotoPerfil"]["name"];
         $fotoPerfilTempName = $_FILES["novaFotoPerfil"]["tmp_name"];
-        $diretorioDestino = "../professor/uploads/foto/";
+        $diretorioDestino = "../../uploads/foto/";
         $nomeUnico = time() . '_' . $fotoPerfilNome;
         $caminhoCompleto = $diretorioDestino . $nomeUnico;
 

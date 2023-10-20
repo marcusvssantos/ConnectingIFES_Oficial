@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verifica se uma nova foto de perfil foi enviada
     if (isset($_FILES["novaFotoPerfil"]) && $_FILES["novaFotoPerfil"]["error"] === 0) {
         // Diretório onde a nova foto de perfil será armazenada (altere para o seu diretório)
-        $diretorioDestino = "../estudante/uploads/foto/";
+        $diretorioDestino = "../../uploads/foto/";
 
         // Gere um nome único para a nova foto de perfil com base no timestamp atual
         $nomeUnico = time() . '_' . $_FILES["novaFotoPerfil"]["name"];

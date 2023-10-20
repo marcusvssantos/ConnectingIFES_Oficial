@@ -23,7 +23,7 @@ function realizarUploadImagem($imagem) {
     $tempNome = $imagem["tmp_name"];
     $erro = $imagem["error"];
     if ($erro === 0) {
-        $diretorioDestino = "../professor/uploads/foto/";
+        $diretorioDestino = "../../uploads/foto/";
         $nomeUnico = time() . '_' . $nome;
         $caminhoCompleto = $diretorioDestino . $nomeUnico;
         move_uploaded_file($tempNome, $caminhoCompleto);
