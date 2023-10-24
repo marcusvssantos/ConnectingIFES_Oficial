@@ -38,7 +38,7 @@ if (mysqli_num_rows($result) > 0) {
     $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
     if ($f_tipo_de_usuario['tipo'] == "estudante") {
-        header("Location: usuarios/estudante/estudante.php");
+        header("Location: usuarios/estudante/index_estudante.php");
         exit();
     } elseif ($f_tipo_de_usuario['tipo'] == "professor") {
         header("Location: usuarios/professor/index_professor.php");

@@ -1,5 +1,9 @@
 <?php
 include("header.php");
+$professor = $_GET["id"];
+
+$perfil_professor = mysqli_query($conn, "SELECT * FROM usuarios WHERE idUsuario = '$professor'");
+$f_perfil_professor = mysqli_fetch_assoc($perfil_professor);
 
 ?>
 
@@ -77,46 +81,37 @@ include("header.php");
 
 <body>
     
-    <div class="main-content">
+<div class="main-content">
         <div class="container mt-5">
-            <h2 class="mb-4" style="color: #32A041;">Publicações</h2>
+            <h2 class="mb-4" style="color: #32A041;">Publicações do professor <?php echo $f_perfil_professor['nome'] . " " . $f_perfil_professor['sobrenome']; ?></h2>
             <?php
-            $conexao = conectarDB();
             $idUsuarioAtual = $f_tipo_de_usuario['idUsuario'];
 
-            $query_professor_id = "SELECT idProfessor FROM professores WHERE idUsuario = '{$f_tipo_de_usuario['idUsuario']}'";
-            $resultado_professor_id = $conexao->query($query_professor_id);
-            $professor_data = $resultado_professor_id->fetch_assoc();
-            $id_professor = $professor_data['idProfessor'];
-
             $sqlPublicacoes = "
-                SELECT p.*, u.*, g.nome AS nomeGrupo
-                FROM connecting_ifes_oficial.publicacoes p 
-                JOIN usuarios u ON p.idProfessor = u.idUsuario 
-                JOIN connecting_ifes_oficial.publicacoesgrupos pg ON p.idPublicacao = pg.idPublicacao
-                JOIN connecting_ifes_oficial.professoresgrupos profg ON pg.idGrupo = profg.idGrupo
-                JOIN connecting_ifes_oficial.grupos g ON pg.idGrupo = g.idGrupo
-                WHERE profg.idProfessor = ?
-                ORDER BY p.dataPublicacao DESC";
+            SELECT p.*, u.nome, u.sobrenome, u.fotoPerfil, g.nome AS nomeGrupo, g.idGrupo
+            FROM publicacoes p 
+            JOIN usuarios u ON p.idProfessor = u.idUsuario 
+            JOIN publicacoesgrupos pg ON p.idPublicacao = pg.idPublicacao
+            JOIN grupos g ON pg.idGrupo = g.idGrupo
+            WHERE p.idProfessor = :idProfessor
+            ORDER BY p.dataPublicacao DESC";
 
-            $stmt = $conexao->prepare($sqlPublicacoes);
-            $stmt->bind_param("i", $id_professor);
+            $stmt = $pdo->prepare($sqlPublicacoes);
+            $stmt->bindParam(':idProfessor', $professor);
             $stmt->execute();
-            $resultadoPublicacoes = $stmt->get_result();
 
-            if ($resultadoPublicacoes->num_rows > 0) {
-                while ($publicacao = $resultadoPublicacoes->fetch_assoc()) {
+            if ($stmt->rowCount() > 0) {
+                while ($publicacao = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     echo "<div class='card publicacao-card'>";
                     echo "<div class='publicacao-card-header'>";
                     echo "<img src='" . $publicacao['fotoPerfil'] . "' alt='Foto de perfil'>";
-                    if($logado === $publicacao['email']){
-                        echo "<h5><a href='meu_perfil.php' style='text-decoration: none; color: #32A041;'>" . $publicacao['nome'] . " " . $publicacao['sobrenome'] . "</a></h5>";
-                    }else {
-                        echo "<h5><a href='perfil_professor.php?id=" . $publicacao['idUsuario'] . "' style='text-decoration: none; color: #32A041;'>" . $publicacao['nome'] . " " . $publicacao['sobrenome'] . "</a></h5>";
+                    echo "<h5>" . $publicacao['nome'] . " " . $publicacao['sobrenome'] . "</h5>";
 
-                    }
-                    echo "<span class='text-muted ml-auto'>" . "Postagem feita dia: " . date("d/m/Y", strtotime($publicacao['dataPublicacao'])) . "</span>";
-                    echo "<span class='text-muted ml-auto'>" . "&nbsp às " . date("H:i", strtotime($publicacao['dataPublicacao'])) .  "</span>";
+                    // Início da div que envolve o botão e as datas
+                    echo "<div style='display: flex; flex-direction: column; align-items: flex-end;'>";
+                    echo "<span class='text-muted'>" . "Postagem feita dia: " . date("d/m/Y", strtotime($publicacao['dataPublicacao'])) . "</span>";
+                    echo "<span class='text-muted'>" . "&nbsp às " . date("H:i", strtotime($publicacao['dataPublicacao'])) .  "</span>";
+                    echo "</div>"; // Fim da div que envolve o botão e as datas
 
                     echo "</div>";
                     echo "<div class='publicacao-card-content'>";
@@ -134,17 +129,16 @@ include("header.php");
             } else {
                 echo "<p>Nenhuma publicação encontrada.</p>";
             }
-
-            $conexao->close();
             ?>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../../bootstrap/js/bootstrap.min.js"></script>
-    <title>Header Lateral IFSC</title>
+    <title>Meu Perfil</title>
 </body>
 
 </html>

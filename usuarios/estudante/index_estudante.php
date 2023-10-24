@@ -64,7 +64,7 @@ include("header.php");
             color: #343a40;
         }
 
-    
+
         .publicacao-card-content img {
             width: 100%;
             max-width: 600px;
@@ -76,7 +76,7 @@ include("header.php");
 </head>
 
 <body>
-    
+
     <div class="main-content">
         <div class="container mt-5">
             <h2 class="mb-4" style="color: #32A041;">Publicações</h2>
@@ -84,23 +84,23 @@ include("header.php");
             $conexao = conectarDB();
             $idUsuarioAtual = $f_tipo_de_usuario['idUsuario'];
 
-            $query_professor_id = "SELECT idProfessor FROM professores WHERE idUsuario = '{$f_tipo_de_usuario['idUsuario']}'";
+            $query_professor_id = "SELECT idEstudante FROM estudantes WHERE idUsuario = '{$f_tipo_de_usuario['idUsuario']}'";
             $resultado_professor_id = $conexao->query($query_professor_id);
             $professor_data = $resultado_professor_id->fetch_assoc();
-            $id_professor = $professor_data['idProfessor'];
+            $id_estudante = $professor_data['idEstudante'];
 
             $sqlPublicacoes = "
-                SELECT p.*, u.*, g.nome AS nomeGrupo
+            SELECT p.*, u.*, g.nome AS nomeGrupo
                 FROM connecting_ifes_oficial.publicacoes p 
                 JOIN usuarios u ON p.idProfessor = u.idUsuario 
                 JOIN connecting_ifes_oficial.publicacoesgrupos pg ON p.idPublicacao = pg.idPublicacao
-                JOIN connecting_ifes_oficial.professoresgrupos profg ON pg.idGrupo = profg.idGrupo
+                JOIN connecting_ifes_oficial.estudantesgrupos profg ON pg.idGrupo = profg.idGrupo
                 JOIN connecting_ifes_oficial.grupos g ON pg.idGrupo = g.idGrupo
-                WHERE profg.idProfessor = ?
+                WHERE profg.idEstudante = ?
                 ORDER BY p.dataPublicacao DESC";
 
             $stmt = $conexao->prepare($sqlPublicacoes);
-            $stmt->bind_param("i", $id_professor);
+            $stmt->bind_param("i", $id_estudante);
             $stmt->execute();
             $resultadoPublicacoes = $stmt->get_result();
 
@@ -109,11 +109,10 @@ include("header.php");
                     echo "<div class='card publicacao-card'>";
                     echo "<div class='publicacao-card-header'>";
                     echo "<img src='" . $publicacao['fotoPerfil'] . "' alt='Foto de perfil'>";
-                    if($logado === $publicacao['email']){
+                    if ($logado === $publicacao['email']) {
                         echo "<h5><a href='meu_perfil.php' style='text-decoration: none; color: #32A041;'>" . $publicacao['nome'] . " " . $publicacao['sobrenome'] . "</a></h5>";
-                    }else {
+                    } else {
                         echo "<h5><a href='perfil_professor.php?id=" . $publicacao['idUsuario'] . "' style='text-decoration: none; color: #32A041;'>" . $publicacao['nome'] . " " . $publicacao['sobrenome'] . "</a></h5>";
-
                     }
                     echo "<span class='text-muted ml-auto'>" . "Postagem feita dia: " . date("d/m/Y", strtotime($publicacao['dataPublicacao'])) . "</span>";
                     echo "<span class='text-muted ml-auto'>" . "&nbsp às " . date("H:i", strtotime($publicacao['dataPublicacao'])) .  "</span>";

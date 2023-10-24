@@ -21,7 +21,7 @@ $tipo_de_usuario = mysqli_query($conn, "SELECT * FROM usuarios WHERE email = '$l
 $f_tipo_de_usuario = mysqli_fetch_assoc($tipo_de_usuario);
 
 
-$sql = "SELECT * FROM usuarios"; // ajuste a consulta conforme necessário
+$sql = "SELECT * FROM usuarios where email != '$logado' "; // ajuste a consulta conforme necessário
 $resultado = $conn->query($sql);
 
 if ($f_tipo_de_usuario['tipo'] !== "professor") {

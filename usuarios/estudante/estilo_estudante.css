@@ -1,0 +1,256 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Estilos para o menu da esquerda */
+.sidebar {
+  height: 100vh;
+  width: 80px;
+  background: linear-gradient(
+    to bottom,
+    rgba(70, 180, 85, 1) 0%,
+    rgba(50, 160, 65, 1) 25%,
+    rgba(30, 140, 45, 1) 75%
+  );
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 20px;
+  margin-top: 60px;
+}
+
+.sidebar a {
+  padding: 10px 15px 10px 30px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #e0191e;
+}
+
+.sidebar-right {
+  height: 100vh;
+  width: 150px;
+  background: linear-gradient(
+    to bottom,
+    rgba(70, 180, 85, 1) 0%,
+    rgba(50, 160, 65, 1) 25%,
+    rgba(30, 140, 45, 1) 75%
+  );
+  position: fixed;
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 20px;
+  border-left: 1px solid #32a041;
+  margin-top: 60px;
+}
+
+.sidebar-right a {
+  padding: 10px 15px 10px 30px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar-right a:hover {
+  color: #e0191e;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #32a041;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e0191e;
+}
+
+.topbar {
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    rgba(70, 180, 85, 1) 0%,
+    rgba(50, 160, 65, 1) 25%,
+    rgba(30, 140, 45, 1) 75%
+  );
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.topbar a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 2px 5px;
+}
+
+.topbar img {
+  border: 1px solid #000000;
+  background: #ffffff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.main-content {
+  margin-left: 85px;
+  margin-right: 155px;
+  margin-top: 55px;
+  padding: 20px;
+  background-color: #ffffff;
+  /* Branco */
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.friend-item img {
+  border: 1px solid #000000;
+  background: #ffffff;
+  border-radius: 50%;
+  width: 25px;
+  margin-right: 10px;
+}
+
+.friend-item a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 2px 5px;
+}
+
+.friend-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.right-items {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo do Modal - você pode adicionar isso no seu arquivo CSS */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 11; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Estilos para o chat */
+.chat-popup {
+  display: none; /* O chat está oculto por padrão */
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 1px solid #ccc;
+  z-index: 1000; /* Ajuste conforme necessário para o seu layout */
+  width: 350px;
+  background-color: #f1f1f1;
+}
+
+.chat-header {
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+/* Estilos para a área de mensagens */
+.chat-content {
+  padding: 10px;
+  height: 400px; /* Altura da área de mensagens */
+  overflow-y: scroll; /* Faz com que seja possível rolar */
+  background-color: #fff; /* Fundo branco para as mensagens */
+}
+
+/* Estilos para a área de envio de mensagens */
+.chat-input-area {
+  padding: 10px;
+  background-color: #f1f1f1;
+  position: relative; /* Posicionamento relativo para o botão de envio */
+}
+
+.chat-input {
+  width: 70%; /* Largura da área de input */
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.chat-send-button {
+  position: absolute; /* Posicionamento absoluto */
+  right: 10px; /* À direita, com um pequeno espaço */
+  top: 50%;
+  transform: translateY(-50%); /* Centraliza verticalmente */
+}
+
+.chat-header-buttons {
+  /* Posicionamento dos botões de minimizar/maximizar */
+}
+
+.chat-minimize,
+.chat-maximize {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}

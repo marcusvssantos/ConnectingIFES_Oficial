@@ -99,7 +99,7 @@ try {
                 </div>
                 <div class="form-group">
                     <label for="fotoPerfil">Foto de Perfil:</label>
-                    <input type="file" class="form-control" id="fotoPerfil" name="fotoPerfil">
+                    <input type="file" onchange="checkFiles(event)" class="form-control" id="fotoPerfil" name="fotoPerfil">
                 </div><br>
                 <button type="submit" class="btn btn-primary" name="atualizar">Atualizar</button>
             </form>
