@@ -77,8 +77,8 @@ function conectarDB()
 
 
   <div class="sidebar">
-    <a href="index_professor.php"><i class="bi bi-house-door"></i></a>
-    <a href="editar_professor.php"><i class="bi bi-gear"></i></a>
+    <a href="index_estudante.php"><i class="bi bi-house-door"></i></a>
+    <a href="editar_estudante.php"><i class="bi bi-gear"></i></a>
     <a href="meu_perfil.php"><i class="bi bi-people"></i></a>
     <a href="#contact"><i class="bi bi-envelope"></i></a>
   </div>
